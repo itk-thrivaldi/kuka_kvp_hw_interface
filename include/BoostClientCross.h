@@ -7,7 +7,7 @@ Communicates with the KUKAVARPROXY server made by
 Massimiliano Fago - massimiliano.fago@gmail.com
 
 Modifications:
-2016-2017 NTNU - Ivar Eriksen 
+2016-2017 NTNU - Ivar Eriksen
 - Fixed compile error on Linux
 - Made all variables class memebers
 - Added support function
@@ -57,7 +57,8 @@ public:
   }
 
   /**
-   * @brief For writing a variable to the robot controller, the message to send must contain a variable name (varName) and a value to write (varValue).
+   * @brief For writing a variable to the robot controller, the message to send must contain a variable name (varName)
+   * and a value to write (varValue).
    *
    * @param varName KRL variable name
    * @param varValue KRL variable value
@@ -116,9 +117,9 @@ public:
     return block;
   }
 
-  
   /**
-   * @brief For reading a variable from the robot controller, the message to send must contain the desired variable name (varName).
+   * @brief For reading a variable from the robot controller, the message to send must contain the desired variable name
+   * (varName).
    *
    * @param varName KRL Variable to read from
    * @param messageId KUKAVARPROXY message ID
@@ -169,7 +170,7 @@ public:
    *
    * @param message Formated message to send. See formatReadMsg and formatWriteMsg
    *
-   * @return Response from KRC 
+   * @return Response from KRC
    */
   std::vector<unsigned char> sendMsg(std::vector<unsigned char> message)
   {
@@ -207,7 +208,7 @@ public:
   }
 
   /**
-   * @brief Write E6AXIS to KRC. 
+   * @brief Write E6AXIS to KRC.
    *
    * @param write_to KRL E6AXIS variable name
    * @param joint_command Joint values, in order from A1 - A6, E1 - E6
@@ -231,7 +232,7 @@ public:
     }
 
     out->back() = '}';
-    
+
     std::vector<unsigned char> out_vector(out->begin(), out->end());
     std::vector<unsigned char> var(write_to->begin(), write_to->end());
     std::vector<unsigned char> formated_out = this->formatWriteMsg(var, out_vector);
@@ -241,7 +242,7 @@ public:
   }
 
   /**
-   * @brief Write E6AXIS to KRC. 
+   * @brief Write E6AXIS to KRC.
    *
    * @param write_to KRL E6AXIS variable name
    * @param joint_command Joint values, in order from A1 - A6, E1 - E6
@@ -249,13 +250,14 @@ public:
    *
    * @return Currently always returns true. Inteded to return true\false depning on succesfull write
    */
-  bool writeE6AXIS(const std::string* write_to, const double* joint_command, const std::size_t joints) {
+  bool writeE6AXIS(const std::string* write_to, const double* joint_command, const std::size_t joints)
+  {
     std::string dummy;
     return writeE6AXIS(write_to, joint_command, joints, &dummy);
   }
-  
+
   /**
-   * @brief Write E6AXIS to KRC. 
+   * @brief Write E6AXIS to KRC.
    *
    * @param write_to KRL E6AXIS variable name
    * @param joint_command Joint values, in order from A1 - A6, E1 - E6
@@ -271,7 +273,7 @@ public:
    * @brief Read KRL E6Axis variable
    *
    * @param read_from KRL E6Axis variable to read from
-   * @param joint_pos Store joint values 
+   * @param joint_pos Store joint values
    *
    * @return Returns false if read fails
    */
@@ -314,20 +316,21 @@ public:
     }
     return true;
   }
- 
-/**
- * @brief Read KRL E6Axis variable
- *
- * @param read_from KRL E6Axis variable to read from
- * @param joint_pos[12] Store values to array
- *
- * @return Returns false if read fails 
- */
+
+  /**
+   * @brief Read KRL E6Axis variable
+   *
+   * @param read_from KRL E6Axis variable to read from
+   * @param joint_pos[12] Store values to array
+   *
+   * @return Returns false if read fails
+   */
   bool readE6AXIS(const std::string* read_from, double joint_pos[12])
   {
     std::map<std::string, double> joint_pos_map;
     bool ret = readE6AXIS(read_from, joint_pos_map);
-    if (!ret) {
+    if (!ret)
+    {
       return false;
     }
 
@@ -348,14 +351,14 @@ public:
     return true;
   }
 
-/**
- * @brief Read a KRL struct
- *
- * @param read_from KRL variable name to read from
- * @param output Map to store return value to
- *
- * @return Returns false if read fails
- */
+  /**
+   * @brief Read a KRL struct
+   *
+   * @param read_from KRL variable name to read from
+   * @param output Map to store return value to
+   *
+   * @return Returns false if read fails
+   */
   bool readStruct(const std::string* read_from, std::map<std::string, std::string>& output)
   {
     std::vector<unsigned char> var(read_from->begin(), read_from->end());
@@ -395,7 +398,6 @@ public:
     }
     return true;
   }
-
 };
 
 #endif

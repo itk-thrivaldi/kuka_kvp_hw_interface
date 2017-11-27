@@ -16,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
 find_package(Boost REQUIRED COMPONENTS system)
 
 
@@ -33,9 +32,9 @@ find_package(Boost REQUIRED COMPONENTS system)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES kuka_kvp_hw_interface
+  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS controller_manager hardware_interface industrial_utils roscpp std_msgs
-  DEPENDS boost
+  DEPENDS Boost
 )
 
 ###########
@@ -48,13 +47,11 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
-# TODO: Check names of system library include directories (boost)
-  ${boost_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
-  src/kuka_kvp_hw_interface.cpp
+  src/${PROJECT_NAME}.cpp
 )
 
 add_library(kuka_kvp_loop
@@ -87,7 +84,8 @@ set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME kuka_kvp_node 
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node
-   kuka_kvp_hw_interface kuka_kvp_loop
+   ${PROJECT_NAME} 
+   kuka_kvp_loop
    ${catkin_LIBRARIES}
    ${Boost_LIBRARIES}
    ${boost_LIBRARIES}
@@ -132,7 +130,7 @@ target_link_libraries(${PROJECT_NAME}_kvp_ftc_node
 # )
 
 ## Mark executables and/or libraries for installation
- install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node ${PROJECT_NAME}_kvp_ftc_node
+install(TARGETS ${PROJECT_NAME} kuka_kvp_loop ${PROJECT_NAME}_node kvp_ftc_interface ${PROJECT_NAME}_kvp_ftc_node
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

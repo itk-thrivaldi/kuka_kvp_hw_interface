@@ -2,7 +2,7 @@
 <package>
   <name>kuka_kvp_hw_interface</name>
   <version>0.0.0</version>
-  <description>The kuka_kvp_hw_interface package</description>
+  <description>Interface for KUKA KRC controllers using KUKAVARPROXY</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -54,9 +54,4 @@
   <run_depend>std_msgs</run_depend>
 
 
-  <!-- The export tag contains other, unspecified, tags -->
-  <export>
-    <!-- Other tools can request additional information be placed here -->
-
-  </export>
 </package>

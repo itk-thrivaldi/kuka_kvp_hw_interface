@@ -1,11 +1,14 @@
 /**
 Copyright 2017 Ivar Eriksen
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
+License. You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific
+language governing permissions and limitations under the License.
 */
 
 /* Author: Ivar Eriksen
@@ -60,7 +63,7 @@ KVPHardwareInterface::KVPHardwareInterface(ros::NodeHandle& nh) : nh_(nh), robot
   registerInterface(&joint_state_interface_);
   registerInterface(&position_joint_interface_);
 
-  realtime_pub_.reset(new realtime_tools::RealtimePublisher<std_msgs::String>(nh_, "kuka_kvp_debug", 4));    
+  realtime_pub_.reset(new realtime_tools::RealtimePublisher<std_msgs::String>(nh_, "kuka_kvp_debug", 4));
   connect();
 }
 
@@ -171,17 +174,19 @@ void KVPHardwareInterface::writeKVP()
       return;
     }
 
-  // Add command position to debug info
-  debug += "\n Command:";
-  for (int i = 0; i < num_joints_; ++i) {
-    debug += " J" + std::to_string(i) + ": "  + std::to_string(joint_command_deg[i]);
-  }
+    // Add command position to debug info
+    debug += "\n Command:";
+    for (int i = 0; i < num_joints_; ++i)
+    {
+      debug += " J" + std::to_string(i) + ": " + std::to_string(joint_command_deg[i]);
+    }
 
-  // Publish string sent to robot  
-  if (realtime_pub_->trylock()){
-    realtime_pub_->msg_.data = debug;
-    realtime_pub_->unlockAndPublish();
-  }
+    // Publish string sent to robot
+    if (realtime_pub_->trylock())
+    {
+      realtime_pub_->msg_.data = debug;
+      realtime_pub_->unlockAndPublish();
+    }
 
     // Signal update done
     robot_update_done_.wait();
