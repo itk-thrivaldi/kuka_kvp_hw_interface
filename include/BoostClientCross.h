@@ -190,7 +190,7 @@ public:
     else if (socketError)
       throw boost::system::system_error(socketError);  // Some other error.
 
-    recblock.erase(recblock.end() - 7, recblock.end());
+    recblock.erase(recblock.end() - 6, recblock.end());
     return recblock;
   }
 
@@ -285,7 +285,6 @@ public:
     std::vector<unsigned char> reply = this->sendMsg(formated_read);
     if (reply.size() == 0)
     {
-      ROS_ERROR("Empty return");
       return false;
     }
 
@@ -367,7 +366,6 @@ public:
     std::vector<unsigned char> reply = this->sendMsg(formated_read);
     if (reply.size() == 0)
     {
-      ROS_ERROR("Empty return");
       return false;
     }
 
@@ -398,6 +396,66 @@ public:
     }
     return true;
   }
-};
+
+  /**
+   * @brief Reads boolean variable from KRC
+   *
+   * @param read_from Variable to read from
+   * @param output Store value to this variable
+   *
+   * @return Returns false on error
+   */
+  bool readBool(const std::string* read_from, bool& output)
+  {
+    std::vector<unsigned char> var(read_from->begin(), read_from->end());
+
+    std::vector<unsigned char> formated_read = this->formatReadMsg(var);
+    std::vector<unsigned char> reply = this->sendMsg(formated_read);
+    if (reply.size() == 0)
+    {
+      return false;
+    }
+
+    std::string value(reply.begin(), reply.end());
+
+    if (value == "TRUE")
+    {
+      output = true;
+    }
+    else if (value == "FALSE")
+    {
+      output = false;
+    }
+    else
+    {
+      // We do not like this output. Return false
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * @brief Write bolean value to KRC
+   *
+   * @param write_to Variable to write to
+   * @param value Value to set
+   *
+   * @return Returns false on error $TODO: Fix this
+   */
+  bool writeBool(const std::string* write_to, const bool* value)
+  {
+    std::string out;
+    out = *value ? "TRUE" : "FALSE";
+
+    std::vector<unsigned char> out_vector(out.begin(), out.end());
+    std::vector<unsigned char> var(write_to->begin(), write_to->end());
+    std::vector<unsigned char> formated_out = this->formatWriteMsg(var, out_vector);
+    std::vector<unsigned char> reply = this->sendMsg(formated_out);
+    // TODO: Check reply from server and return true/false based on this
+    return true;
+  }
+
+};  // class
 
 #endif
