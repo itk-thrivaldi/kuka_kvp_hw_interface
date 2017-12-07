@@ -11,12 +11,27 @@ find_package(catkin REQUIRED COMPONENTS
   controller_manager
   hardware_interface
   industrial_utils
+  industrial_msgs
   roscpp
   std_msgs
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system)
+
+add_service_files(
+    FILES
+    unlockTool.srv
+    lockTool.srv
+    getToolStatus.srv
+)
+
+generate_messages(
+   DEPENDENCIES
+      std_msgs
+      industrial_msgs
+)
 
 
 
@@ -33,7 +48,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS controller_manager hardware_interface industrial_utils roscpp std_msgs
+  CATKIN_DEPENDS controller_manager hardware_interface industrial_utils industrial_msgs roscpp std_msgs
   DEPENDS Boost
 )
 
@@ -60,6 +75,10 @@ add_library(kuka_kvp_loop
 
 add_library(kvp_ftc_interface
   src/kvp_ftc_interface.cpp
+)
+
+add_library(kvp_sws_interface
+  src/kvp_sws_interface.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -114,6 +133,17 @@ target_link_libraries(${PROJECT_NAME}_kvp_ftc_node
    ${boost_LIBRARIES}
  )
 
+add_executable(${PROJECT_NAME}_kvp_sws_node src/kvp_sws_node.cpp)
+set_target_properties(${PROJECT_NAME}_kvp_sws_node PROPERTIES OUTPUT_NAME kvp_sws_node PREFIX "")
+add_dependencies(${PROJECT_NAME}_kvp_sws_node ${PROJECT_NAME}_gencpp)
+target_link_libraries(${PROJECT_NAME}_kvp_sws_node
+   kvp_sws_interface
+   ${catkin_LIBRARIES}
+   ${Boost_LIBRARIES}
+   ${boost_LIBRARIES}
+ )
+
+
 
 #############
 ## Install ##
@@ -130,7 +160,7 @@ target_link_libraries(${PROJECT_NAME}_kvp_ftc_node
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ${PROJECT_NAME} kuka_kvp_loop ${PROJECT_NAME}_node kvp_ftc_interface ${PROJECT_NAME}_kvp_ftc_node
+install(TARGETS ${PROJECT_NAME} kuka_kvp_loop ${PROJECT_NAME}_node kvp_ftc_interface ${PROJECT_NAME}_kvp_ftc_node ${PROJECT_NAME}_kvp_sws_node
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

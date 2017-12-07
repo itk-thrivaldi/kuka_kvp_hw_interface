@@ -1,0 +1,3 @@
+# Lock the SWS toolchanger
+---
+industrial_msgs/ServiceReturnCode code
