@@ -1,0 +1,34 @@
+&ACCESS RVO
+&REL 8
+&PARAM TEMPLATE = C:\KRC\Roboter\Template\ExpertVorgabe
+&PARAM EDITMASK = *
+DEF toolchanger()
+; Operates toolchanger
+;
+; Current state: sws_status
+; Requested state: sws_set
+
+
+
+; Actual output of the toolchanger
+SIGNAL valve $OUT[3]
+
+; Set status value to actual value
+sws_status = NOT(valve);
+
+; Check if we actually need to do anything
+IF sws_status==sws_set THEN
+  ;Value is already correct
+  RETURN
+ENDIF
+
+; Check that we are inside a workspace
+IF $WORKSPACE[1].STATE==TRUE THEN
+  ;Operates the pneumatic valve
+  valve = NOT(sws_set)
+ELSE
+  ; Outside workspace. Make sure we don't release tool as soon as we are inside workspace
+  sws_set = sws_status
+ENDIF
+
+END
