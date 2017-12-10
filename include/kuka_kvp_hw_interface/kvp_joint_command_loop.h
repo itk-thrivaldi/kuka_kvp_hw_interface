@@ -16,10 +16,10 @@ language governing permissions and limitations under the License.
          Inspired from davetcoleman/ros_control_boilerplate and kuka_experimental/kuka_rsi_hw_interface
 */
 
-#ifndef KUKA_KVP_LOOP_H
-#define KUKA_KVP_LOOP_H
+#ifndef KVP_JOINT_COMMAND_LOOP_H
+#define KVP_JOINT_COMMAND_LOOP_H
 
-#include <kuka_kvp_hw_interface/kuka_kvp_hw_interface.h>
+#include <kuka_kvp_hw_interface/kvp_joint_command_interface.h>
 #include <chrono>
 #include <ros/ros.h>
 
@@ -28,17 +28,17 @@ namespace kuka_kvp_hw_interface
 /**
  * @brief HW Controll loop
  */
-class KukaKVPLoop
+class KVPJointCommandLoop
 {
 public:
-  KukaKVPLoop(ros::NodeHandle& nh, boost::shared_ptr<kuka_kvp_hw_interface::KVPHardwareInterface> robot);
+ KVPJointCommandLoop(ros::NodeHandle& nh, boost::shared_ptr<kuka_kvp_hw_interface::KVPJointCommandInterface> robot);
   void controlUpdate(const ros::TimerEvent& event);
 
 private:
   ros::NodeHandle nh_;
   ros::Timer control_loop_;
   boost::shared_ptr<controller_manager::ControllerManager> cm_;
-  boost::shared_ptr<kuka_kvp_hw_interface::KVPHardwareInterface> robot_;
+  boost::shared_ptr<kuka_kvp_hw_interface::KVPJointCommandInterface> robot_;
   std::chrono::time_point<std::chrono::steady_clock> stopwatch_last_;
   std::chrono::time_point<std::chrono::steady_clock> stopwatch_now_;
   ros::Time timestamp_;

@@ -16,11 +16,11 @@ language governing permissions and limitations under the License.
          Inspired from davetcoleman/ros_control_boilerplate and kuka_experimental/kuka_rsi_hw_interface
 */
 
-#include <kuka_kvp_hw_interface/kuka_kvp_hw_interface.h>
+#include <kuka_kvp_hw_interface/kvp_joint_command_interface.h>
 
 namespace kuka_kvp_hw_interface
 {
-KVPHardwareInterface::KVPHardwareInterface(ros::NodeHandle& nh) : nh_(nh), robot_update_done_(3), robot_update_start_(3)
+KVPJointCommandInterface::KVPJointCommandInterface(ros::NodeHandle& nh) : nh_(nh), robot_update_start_(3), robot_update_done_(3)
 {
   // Find joint names and set num_joints_
   industrial_utils::param::getJointNames(std::string("controller_joint_names"), std::string("robot_description"),
@@ -67,7 +67,7 @@ KVPHardwareInterface::KVPHardwareInterface(ros::NodeHandle& nh) : nh_(nh), robot
   connect();
 }
 
-void KVPHardwareInterface::read()
+void KVPJointCommandInterface::read()
 {
   // Release worker threads
   robot_update_start_.wait();
@@ -76,15 +76,15 @@ void KVPHardwareInterface::read()
   robot_update_done_.wait();
 }
 
-void KVPHardwareInterface::connect()
+void KVPJointCommandInterface::connect()
 {
   robot_read_.connectSocket(ip_, "7000");
   robot_write_.connectSocket(ip_, "7000");
-  read_thread_ = boost::thread(&KVPHardwareInterface::readKVP, this);
-  write_thread_ = boost::thread(&KVPHardwareInterface::writeKVP, this);
+  read_thread_ = boost::thread(&KVPJointCommandInterface::readKVP, this);
+  write_thread_ = boost::thread(&KVPJointCommandInterface::writeKVP, this);
 }
 
-void KVPHardwareInterface::disconnect()
+void KVPJointCommandInterface::disconnect()
 {
   robot_run_ = false;
   // Avoid deadlock, probably smother way to fix this
@@ -95,7 +95,7 @@ void KVPHardwareInterface::disconnect()
   robot_write_.disconnectSocket();
 }
 
-void KVPHardwareInterface::readKVP()
+void KVPJointCommandInterface::readKVP()
 {
   double joint_position_rad[12];
   static const double DEG2RAD = 0.017453292519943295;
@@ -136,7 +136,7 @@ void KVPHardwareInterface::readKVP()
   }
 }
 
-void KVPHardwareInterface::writeKVP()
+void KVPJointCommandInterface::writeKVP()
 {
   double joint_command_deg[num_joints_] = { 0 };
   static const double RAD2DEG = 57.295779513082323;

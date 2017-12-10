@@ -16,8 +16,8 @@ language governing permissions and limitations under the License.
          Inspired from davetcoleman/ros_control_boilerplate and kuka_experimental/kuka_rsi_hw_interface
 */
 
-#include <kuka_kvp_hw_interface/kuka_kvp_hw_interface.h>
-#include <kuka_kvp_hw_interface/kuka_kvp_loop.h>
+#include <kuka_kvp_hw_interface/kvp_joint_command_interface.h>
+#include <kuka_kvp_hw_interface/kvp_joint_command_loop.h>
 
 int main(int argc, char** argv)
 {
@@ -27,12 +27,12 @@ int main(int argc, char** argv)
   ros::AsyncSpinner spinner(2);
   spinner.start();
 
-  boost::shared_ptr<kuka_kvp_hw_interface::KVPHardwareInterface> robot(
-      new kuka_kvp_hw_interface::KVPHardwareInterface(nh));
+  boost::shared_ptr<kuka_kvp_hw_interface::KVPJointCommandInterface> robot(
+      new kuka_kvp_hw_interface::KVPJointCommandInterface(nh));
   ROS_INFO_STREAM_NAMED("hardware_interface", "Connected to robot");
 
   ROS_DEBUG_STREAM_NAMED("hardware_interface", "Entering loop");
-  kuka_kvp_hw_interface::KukaKVPLoop control_loop(nh, robot);
+  kuka_kvp_hw_interface::KVPJointCommandLoop control_loop(nh, robot);
 
   while (ros::ok())
   {

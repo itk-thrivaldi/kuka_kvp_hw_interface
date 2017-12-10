@@ -16,11 +16,11 @@ language governing permissions and limitations under the License.
          Inspired from davetcoleman/ros_control_boilerplate and kuka_experimental/kuka_rsi_hw_interface
 */
 
-#include <kuka_kvp_hw_interface/kuka_kvp_loop.h>
+#include <kuka_kvp_hw_interface/kvp_joint_command_loop.h>
 
 namespace kuka_kvp_hw_interface
 {
-KukaKVPLoop::KukaKVPLoop(ros::NodeHandle& nh, boost::shared_ptr<kuka_kvp_hw_interface::KVPHardwareInterface> robot)
+KVPJointCommandLoop::KVPJointCommandLoop(ros::NodeHandle& nh, boost::shared_ptr<kuka_kvp_hw_interface::KVPJointCommandInterface> robot)
   : nh_(nh), robot_(robot)
 {
   cm_.reset(new controller_manager::ControllerManager(robot_.get(), nh_));
@@ -29,10 +29,10 @@ KukaKVPLoop::KukaKVPLoop(ros::NodeHandle& nh, boost::shared_ptr<kuka_kvp_hw_inte
   stopwatch_last_ = std::chrono::steady_clock::now();
 
   // Timer with callback
-  control_loop_ = nh_.createTimer(ros::Duration(0.12), &KukaKVPLoop::controlUpdate, this);
+  control_loop_ = nh_.createTimer(ros::Duration(0.12), &KVPJointCommandLoop::controlUpdate, this);
 }
 
-void KukaKVPLoop::controlUpdate(const ros::TimerEvent& event)
+void KVPJointCommandLoop::controlUpdate(const ros::TimerEvent& event)
 {
   robot_->read();
   timestamp_ = ros::Time::now();

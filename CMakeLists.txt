@@ -65,12 +65,12 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME}
-  src/${PROJECT_NAME}.cpp
+add_library(kvp_joint_command_interface
+  src/kvp_joint_command_interface.cpp
 )
 
-add_library(kuka_kvp_loop
-  src/kuka_kvp_loop.cpp
+add_library(kvp_joint_command_loop
+  src/kvp_joint_command_loop.cpp
 )
 
 add_library(kvp_ftc_interface
@@ -89,22 +89,22 @@ add_library(kvp_sws_interface
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/kuka_kvp_node.cpp)
+add_executable(${PROJECT_NAME}_kvp_joint_command_node src/kvp_joint_command_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
-set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME kuka_kvp_node PREFIX "")
+set_target_properties(${PROJECT_NAME}_kvp_joint_command_node PROPERTIES OUTPUT_NAME kvp_joint_command_node PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
-   ${PROJECT_NAME} 
-   kuka_kvp_loop
+target_link_libraries(${PROJECT_NAME}_kvp_joint_command_node
+   kvp_joint_command_interface 
+   kvp_joint_command_loop
    ${catkin_LIBRARIES}
    ${Boost_LIBRARIES}
    ${boost_LIBRARIES}
@@ -160,7 +160,7 @@ target_link_libraries(${PROJECT_NAME}_kvp_sws_node
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ${PROJECT_NAME} kuka_kvp_loop ${PROJECT_NAME}_node kvp_ftc_interface ${PROJECT_NAME}_kvp_ftc_node ${PROJECT_NAME}_kvp_sws_node
+install(TARGETS ${PROJECT_NAME}_kvp_joint_command_node kvp_joint_command_interface kvp_joint_command_loop kvp_ftc_interface ${PROJECT_NAME}_kvp_ftc_node ${PROJECT_NAME}_kvp_sws_node
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

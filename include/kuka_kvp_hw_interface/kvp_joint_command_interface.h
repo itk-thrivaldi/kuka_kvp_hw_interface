@@ -16,8 +16,8 @@ language governing permissions and limitations under the License.
          Inspired from davetcoleman/ros_control_boilerplate and kuka_experimental/kuka_rsi_hw_interface
 */
 
-#ifndef KUKA_KVP_HW_INTERFACE_H
-#define KUKA_KVP_HW_INTERFACE_H
+#ifndef KVP_JOINT_COMMAND_INTERFACE_H
+#define KVP_JOINT_COMMAND_INTERFACE_H
 
 // C++
 #include <string>
@@ -46,7 +46,7 @@ language governing permissions and limitations under the License.
 
 namespace kuka_kvp_hw_interface
 {
-class KVPHardwareInterface : public hardware_interface::RobotHW
+class KVPJointCommandInterface : public hardware_interface::RobotHW
 {
 protected:
   ros::NodeHandle nh_;
@@ -92,7 +92,7 @@ private:
   void writeKVP();
 
 public:
-  KVPHardwareInterface(ros::NodeHandle& nh);
+  KVPJointCommandInterface(ros::NodeHandle& nh);
 
   /** \brief Read state from robot
    *   Releases both read and write threads
@@ -108,7 +108,7 @@ public:
   void write(){};
 
   /** \brief Destructor. Calls disconnect */
-  ~KVPHardwareInterface()
+  ~KVPJointCommandInterface()
   {
     disconnect();
   };
