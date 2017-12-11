@@ -5,10 +5,19 @@ Package for controlling a KUKA KRC robot from ROS using KUKAVARPROXY
 
 ## ROS Nodes in this package
 
-* kuka_kvp_node
+* kvp_joint_command_node
 
    Publishes robot joint states using ROS Controls JointStateHandle
    Sets robot joints using JointPositionCommand. Works good with JointGroupPosition controller, but might skip trajectory points if used with FollowJointTrajectory controller
+
+* kvp_joint_trajectory_node
+
+   FollowJointTrajectoryAction server. Will follow a trajectory. Prefers spare trajectories to keep execution speed up
+
+* kvp_joint_state_node
+
+   Publies robot joint states using ROS Controls JointStateHandle
+
 
 * kvp_ftc_node
 
