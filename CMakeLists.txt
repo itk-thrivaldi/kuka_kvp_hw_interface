@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   message_generation
+  actionlib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -48,7 +49,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS controller_manager hardware_interface industrial_utils industrial_msgs roscpp std_msgs
+  CATKIN_DEPENDS controller_manager hardware_interface industrial_utils industrial_msgs roscpp std_msgs actionlib
   DEPENDS Boost
 )
 
@@ -81,6 +82,18 @@ add_library(kvp_sws_interface
   src/kvp_sws_interface.cpp
 )
 
+add_library(kvp_joint_trajectory_interface
+  src/kvp_joint_trajectory_interface.cpp
+)
+
+add_library(kvp_joint_state_interface
+  src/kvp_joint_state_interface.cpp
+)
+
+add_library(kvp_joint_state_loop
+  src/kvp_joint_state_loop.cpp
+)
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -110,22 +123,19 @@ target_link_libraries(${PROJECT_NAME}_kvp_joint_command_node
    ${boost_LIBRARIES}
  )
 
-## Declare a C++ executable
-## With catkin_make all packages are built within a single CMake context
-## The recommended prefix ensures that target names across packages don't collide
+add_executable(${PROJECT_NAME}_kvp_joint_state_node src/kvp_joint_state_node.cpp)
+set_target_properties(${PROJECT_NAME}_kvp_joint_state_node PROPERTIES OUTPUT_NAME kvp_joint_state_node PREFIX "")
+target_link_libraries(${PROJECT_NAME}_kvp_joint_state_node
+   kvp_joint_state_interface 
+   kvp_joint_state_loop
+   ${catkin_LIBRARIES}
+   ${Boost_LIBRARIES}
+   ${boost_LIBRARIES}
+ )
+
+
 add_executable(${PROJECT_NAME}_kvp_ftc_node src/kvp_ftc_node.cpp)
-
-## Rename C++ executable without prefix
-## The above recommended prefix causes long target names, the following renames the
-## target back to the shorter version for ease of user use
-## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 set_target_properties(${PROJECT_NAME}_kvp_ftc_node PROPERTIES OUTPUT_NAME kvp_ftc_node PREFIX "")
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_kvp_ftc_node
    kvp_ftc_interface
    ${catkin_LIBRARIES}
@@ -143,6 +153,14 @@ target_link_libraries(${PROJECT_NAME}_kvp_sws_node
    ${boost_LIBRARIES}
  )
 
+add_executable(${PROJECT_NAME}_kvp_joint_trajectory_node src/kvp_joint_trajectory_node.cpp)
+set_target_properties(${PROJECT_NAME}_kvp_joint_trajectory_node PROPERTIES OUTPUT_NAME kvp_joint_trajectory_node PREFIX "")
+target_link_libraries(${PROJECT_NAME}_kvp_joint_trajectory_node
+   kvp_joint_trajectory_interface
+   ${catkin_LIBRARIES}
+   ${Boost_LIBRARIES}
+   ${boost_LIBRARIES}
+ )
 
 
 #############
@@ -160,7 +178,27 @@ target_link_libraries(${PROJECT_NAME}_kvp_sws_node
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ${PROJECT_NAME}_kvp_joint_command_node kvp_joint_command_interface kvp_joint_command_loop kvp_ftc_interface ${PROJECT_NAME}_kvp_ftc_node ${PROJECT_NAME}_kvp_sws_node
+install(TARGETS ${PROJECT_NAME}_kvp_joint_command_node kvp_joint_command_interface kvp_joint_command_loop 
+   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(TARGETS kvp_ftc_interface ${PROJECT_NAME}_kvp_ftc_node 
+   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(TARGETS ${PROJECT_NAME}_kvp_sws_node kvp_sws_interface
+   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(TARGETS ${PROJECT_NAME}_kvp_joint_trajectory_node kvp_joint_trajectory_interface
+   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(TARGETS ${PROJECT_NAME}_kvp_joint_state_node kvp_joint_state_interface kvp_joint_state_loop 
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
