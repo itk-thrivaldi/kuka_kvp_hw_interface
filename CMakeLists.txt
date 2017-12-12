@@ -145,7 +145,7 @@ target_link_libraries(${PROJECT_NAME}_kvp_ftc_node
 
 add_executable(${PROJECT_NAME}_kvp_sws_node src/kvp_sws_node.cpp)
 set_target_properties(${PROJECT_NAME}_kvp_sws_node PROPERTIES OUTPUT_NAME kvp_sws_node PREFIX "")
-add_dependencies(${PROJECT_NAME}_kvp_sws_node ${PROJECT_NAME}_gencpp)
+add_dependencies(${PROJECT_NAME}_kvp_sws_node ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(${PROJECT_NAME}_kvp_sws_node
    kvp_sws_interface
    ${catkin_LIBRARIES}
