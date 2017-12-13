@@ -49,7 +49,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS controller_manager hardware_interface industrial_utils industrial_msgs roscpp std_msgs actionlib
+  CATKIN_DEPENDS controller_manager hardware_interface industrial_utils industrial_msgs roscpp std_msgs actionlib message_runtime
   DEPENDS Boost
 )
 
@@ -81,6 +81,7 @@ add_library(kvp_ftc_interface
 add_library(kvp_sws_interface
   src/kvp_sws_interface.cpp
 )
+add_dependencies(kvp_sws_interface ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_library(kvp_joint_trajectory_interface
   src/kvp_joint_trajectory_interface.cpp
@@ -145,7 +146,7 @@ target_link_libraries(${PROJECT_NAME}_kvp_ftc_node
 
 add_executable(${PROJECT_NAME}_kvp_sws_node src/kvp_sws_node.cpp)
 set_target_properties(${PROJECT_NAME}_kvp_sws_node PROPERTIES OUTPUT_NAME kvp_sws_node PREFIX "")
-add_dependencies(${PROJECT_NAME}_kvp_sws_node ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_kvp_sws_node ${PROJECT_NAME}_generate_messages_cpp ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME}_kvp_sws_node
    kvp_sws_interface
    ${catkin_LIBRARIES}
