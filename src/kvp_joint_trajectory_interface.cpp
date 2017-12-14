@@ -22,9 +22,8 @@ namespace kuka_kvp_hw_interface
 KVPJointTrajectoryInterface::KVPJointTrajectoryInterface(ros::NodeHandle& nh)
   : nh_(nh), trajectory_barrier_(2), abort_barrier_(2)
 {
-
-	is_running_ = false;
-	abort_trajectory_ = false;
+  is_running_ = false;
+  abort_trajectory_ = false;
   // Find joint names and set num_joints_
   industrial_utils::param::getJointNames(std::string("controller_joint_names"), std::string("robot_description"),
                                          joint_names_);
@@ -111,7 +110,7 @@ void KVPJointTrajectoryInterface::executeTrajectory()
   // $POS_BACK Start position of current motion block. Cartesian
   // $AXIS_BACK Start position of current motion block E6AXIS
   // $AXIS_FOR Target position of current motion block E6AXIS
-  
+
   while (ros::ok())
   {
     // Wait for trajectory
@@ -130,9 +129,9 @@ void KVPJointTrajectoryInterface::executeTrajectory()
     // Loop over points
     for (auto point : trajectory.points)
     {
-			// Order points according to joint_names_
-			double joint_command[num_joints_];
-			traj2joint(trajectory.joint_names, point, joint_command);
+      // Order points according to joint_names_
+      double joint_command[num_joints_];
+      traj2joint(trajectory.joint_names, point, joint_command);
 
       // Send point to robot
       robot_.writeE6AXIS(&kvp_write_to_, joint_command, num_joints_);
@@ -143,12 +142,13 @@ void KVPJointTrajectoryInterface::executeTrajectory()
       while (!isCurrentMotion(joint_command))
       {
         // Abort if abort
-        if(abort_trajectory_.load()) {
+        if (abort_trajectory_.load())
+        {
           break;
         }
 
         // Don't spam controller
-    //    ros::Duration(0.1).sleep();
+        //    ros::Duration(0.1).sleep();
       }
 
       // Should we abort?
@@ -161,8 +161,8 @@ void KVPJointTrajectoryInterface::executeTrajectory()
         is_running_ = false;
         // Cancel current goal
         gh_.setCanceled();
-            // unlock mutex
-            mutex_.unlock();
+        // unlock mutex
+        mutex_.unlock();
         // Signal abort OK
         abort_barrier_.wait();
         // break
@@ -180,10 +180,12 @@ void KVPJointTrajectoryInterface::executeTrajectory()
   }  // while
 }
 
-void KVPJointTrajectoryInterface::traj2joint(std::vector<std::string> joint_names, trajectory_msgs::JointTrajectoryPoint point, double *joint_command) {
+void KVPJointTrajectoryInterface::traj2joint(std::vector<std::string> joint_names,
+                                             trajectory_msgs::JointTrajectoryPoint point, double* joint_command)
+{
   static const double RAD2DEG = 57.295779513082323;
   std::map<std::string, double> tmp;
-	for (size_t i = 0; i < joint_names.size(); ++i)
+  for (size_t i = 0; i < joint_names.size(); ++i)
   {
     tmp[joint_names[i]] = point.positions[i] * RAD2DEG;
   }
@@ -212,10 +214,10 @@ std::map<std::string, double> KVPJointTrajectoryInterface::trajectoryPoint2exa6i
     e6axis[kuka_joints[i]] == tmp[joint_names_[i]];
   }
 
-    return e6axis;
+  return e6axis;
 }
 
-bool KVPJointTrajectoryInterface::isCurrentMotion(double *wanted)
+bool KVPJointTrajectoryInterface::isCurrentMotion(double* wanted)
 {
   double actual[12];
   std::string read_from = "$AXIS_FOR";
@@ -225,14 +227,16 @@ bool KVPJointTrajectoryInterface::isCurrentMotion(double *wanted)
     ROS_ERROR("Error reading from robot");
     return false;
   }
- 
+
   // Do a rough compare
-  for (size_t i = 0; i < num_joints_; i++) {
-     if ( (actual[i] > wanted[i] + 2) || (actual[i] < wanted[i] - 2) ) {
-         return false;
+  for (size_t i = 0; i < num_joints_; i++)
+  {
+    if ((actual[i] > wanted[i] + 2) || (actual[i] < wanted[i] - 2))
+    {
+      return false;
     }
   }
-  
+
   return true;
 }
 

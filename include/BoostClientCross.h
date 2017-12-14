@@ -291,35 +291,36 @@ public:
     std::string act_pos(reply.begin(), reply.end());
 
     // Check that we got atleast one ,
-    if (act_pos.find(",") == std::string::npos) {
+    if (act_pos.find(",") == std::string::npos)
+    {
       return false;
     }
 
-      // remove var name and trailing }
-      act_pos = act_pos.substr(act_pos.find(": ") + 1);
-      act_pos.pop_back();
-      typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
+    // remove var name and trailing }
+    act_pos = act_pos.substr(act_pos.find(": ") + 1);
+    act_pos.pop_back();
+    typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
 
-      boost::char_separator<char> sep(", ");
-      tokenizer tokens(act_pos, sep);
-      tokenizer::iterator tok_var = tokens.begin();
-      tokenizer::iterator tok_value;
-   
-      for (; tok_var != tokens.end(); std::advance(tok_var, 2))
+    boost::char_separator<char> sep(", ");
+    tokenizer tokens(act_pos, sep);
+    tokenizer::iterator tok_var = tokens.begin();
+    tokenizer::iterator tok_value;
+
+    for (; tok_var != tokens.end(); std::advance(tok_var, 2))
+    {
+      tok_value = tok_var;
+      tok_value++;
+      try
       {
-        tok_value = tok_var;
-        tok_value++;
-        try
-        {
-          joint_pos[*tok_var] = std::stod(*tok_value);
-        }
-        catch (const std::invalid_argument& e)
-        {
-          return false;
-        }
+        joint_pos[*tok_var] = std::stod(*tok_value);
       }
+      catch (const std::invalid_argument& e)
+      {
+        return false;
+      }
+    }
 
-   return true;
+    return true;
   }
 
   /**

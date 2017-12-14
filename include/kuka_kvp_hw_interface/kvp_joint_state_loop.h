@@ -31,8 +31,8 @@ namespace kuka_kvp_hw_interface
 class KVPJointStateLoop
 {
 public:
- KVPJointStateLoop(ros::NodeHandle& nh, boost::shared_ptr<kuka_kvp_hw_interface::KVPJointStateInterface> robot);
- void controlUpdate(const ros::TimerEvent& event);
+  KVPJointStateLoop(ros::NodeHandle& nh, boost::shared_ptr<kuka_kvp_hw_interface::KVPJointStateInterface> robot);
+  void controlUpdate(const ros::TimerEvent& event);
 
 private:
   ros::NodeHandle nh_;

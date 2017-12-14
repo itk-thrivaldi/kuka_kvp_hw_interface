@@ -20,7 +20,8 @@ language governing permissions and limitations under the License.
 
 namespace kuka_kvp_hw_interface
 {
-KVPJointCommandLoop::KVPJointCommandLoop(ros::NodeHandle& nh, boost::shared_ptr<kuka_kvp_hw_interface::KVPJointCommandInterface> robot)
+KVPJointCommandLoop::KVPJointCommandLoop(ros::NodeHandle& nh,
+                                         boost::shared_ptr<kuka_kvp_hw_interface::KVPJointCommandInterface> robot)
   : nh_(nh), robot_(robot)
 {
   cm_.reset(new controller_manager::ControllerManager(robot_.get(), nh_));

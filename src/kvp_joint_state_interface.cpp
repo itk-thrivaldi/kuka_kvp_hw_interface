@@ -44,13 +44,12 @@ KVPJointStateInterface::KVPJointStateInterface(ros::NodeHandle& nh) : nh_(nh)
   joint_velocity_.resize(num_joints_, 0.0);
   joint_effort_.resize(num_joints_, 0.0);
 
-    for (std::size_t i = 0; i < num_joints_; ++i)
+  for (std::size_t i = 0; i < num_joints_; ++i)
   {
     // Create joint state interface for all joints
     joint_state_interface_.registerHandle(hardware_interface::JointStateHandle(joint_names_[i], &joint_position_[i],
                                                                                &joint_velocity_[i], &joint_effort_[i]));
-
-    }
+  }
   registerInterface(&joint_state_interface_);
 
   connect();
@@ -61,26 +60,26 @@ void KVPJointStateInterface::read()
   double joint_position_rad[12];
   static const double DEG2RAD = 0.017453292519943295;
 
-    // Read data from robot
-    if (!robot_read_.readE6AXIS(&kvp_read_from_, joint_position_rad))
-    {
-      ROS_ERROR("Failed to read from robot");
-      return;
-    }
+  // Read data from robot
+  if (!robot_read_.readE6AXIS(&kvp_read_from_, joint_position_rad))
+  {
+    ROS_ERROR("Failed to read from robot");
+    return;
+  }
 
-    // Assume all robots have atleast 6 axes.
-    // @TODO: Use one loop, get joint type from URDF
-    for (int i = 0; i < 6; i++)
-    {
-      joint_position_[i] = DEG2RAD * joint_position_rad[i];
-    }
+  // Assume all robots have atleast 6 axes.
+  // @TODO: Use one loop, get joint type from URDF
+  for (int i = 0; i < 6; i++)
+  {
+    joint_position_[i] = DEG2RAD * joint_position_rad[i];
+  }
 
-    // Assume all external axes are linear
-    // @TODO: Get axis type from URDF
-    for (int i = 6; i < num_joints_; i++)
-    {
-      joint_position_[i] = joint_position_rad[i] / 1000;
-    }
+  // Assume all external axes are linear
+  // @TODO: Get axis type from URDF
+  for (int i = 6; i < num_joints_; i++)
+  {
+    joint_position_[i] = joint_position_rad[i] / 1000;
+  }
 }
 
 void KVPJointStateInterface::connect()

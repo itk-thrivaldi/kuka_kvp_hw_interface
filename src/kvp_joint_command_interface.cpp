@@ -20,7 +20,8 @@ language governing permissions and limitations under the License.
 
 namespace kuka_kvp_hw_interface
 {
-KVPJointCommandInterface::KVPJointCommandInterface(ros::NodeHandle& nh) : nh_(nh), robot_update_start_(3), robot_update_done_(3)
+KVPJointCommandInterface::KVPJointCommandInterface(ros::NodeHandle& nh)
+  : nh_(nh), robot_update_start_(3), robot_update_done_(3)
 {
   // Find joint names and set num_joints_
   industrial_utils::param::getJointNames(std::string("controller_joint_names"), std::string("robot_description"),

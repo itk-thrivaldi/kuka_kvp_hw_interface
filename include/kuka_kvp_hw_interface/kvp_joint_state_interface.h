@@ -65,7 +65,6 @@ private:
   // Variables for robot communication
   BoostClientCross robot_read_;
 
-
 public:
   KVPJointStateInterface(ros::NodeHandle& nh);
 

@@ -31,7 +31,7 @@ namespace kuka_kvp_hw_interface
 class KVPJointCommandLoop
 {
 public:
- KVPJointCommandLoop(ros::NodeHandle& nh, boost::shared_ptr<kuka_kvp_hw_interface::KVPJointCommandInterface> robot);
+  KVPJointCommandLoop(ros::NodeHandle& nh, boost::shared_ptr<kuka_kvp_hw_interface::KVPJointCommandInterface> robot);
   void controlUpdate(const ros::TimerEvent& event);
 
 private:

@@ -48,9 +48,9 @@ class KVPJointTrajectoryInterface
 {
 protected:
   ros::NodeHandle nh_;
-  typedef actionlib::ActionServer<control_msgs::FollowJointTrajectoryAction>                  ActionServer;
+  typedef actionlib::ActionServer<control_msgs::FollowJointTrajectoryAction> ActionServer;
   boost::shared_ptr<ActionServer> action_server_;
- 
+
   // Configuration variables
   std::vector<std::string> joint_names_;
   std::size_t num_joints_;
@@ -59,8 +59,9 @@ protected:
   std::string ip_;
   std::string kvp_write_to_;
 
-  bool isCurrentMotion(double *wanted);
-  std::map<std::string, double> trajectoryPoint2exa6is(std::vector<std::string> joint_names, trajectory_msgs::JointTrajectoryPoint point); 
+  bool isCurrentMotion(double* wanted);
+  std::map<std::string, double> trajectoryPoint2exa6is(std::vector<std::string> joint_names,
+                                                       trajectory_msgs::JointTrajectoryPoint point);
 
 private:
   // Variables for robot communication
@@ -76,19 +77,20 @@ private:
   ActionServer::GoalHandle gh_;
 
   void executeTrajectory();
-  void traj2joint(std::vector<std::string> joint_names, trajectory_msgs::JointTrajectoryPoint point, double *joint_command);
+  void traj2joint(std::vector<std::string> joint_names, trajectory_msgs::JointTrajectoryPoint point,
+                  double* joint_command);
 
 public:
   KVPJointTrajectoryInterface(ros::NodeHandle& nh);
 
-   /** \brief Destructor. Calls disconnect */
+  /** \brief Destructor. Calls disconnect */
   ~KVPJointTrajectoryInterface()
   {
     disconnect();
   };
 
   void cancelCB(ActionServer::GoalHandle gh);
-	void goalCB(ActionServer::GoalHandle gh);
+  void goalCB(ActionServer::GoalHandle gh);
 
   /** \brief Disconnect from robot */
   void disconnect();
