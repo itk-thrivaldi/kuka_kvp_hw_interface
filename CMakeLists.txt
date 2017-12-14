@@ -8,30 +8,28 @@ add_compile_options(-std=c++11)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  actionlib
   controller_manager
   hardware_interface
-  industrial_utils
   industrial_msgs
+  industrial_utils
+  message_generation
   roscpp
   std_msgs
-  message_generation
-  actionlib
 )
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system)
 
-add_service_files(
-    FILES
-    unlockTool.srv
-    lockTool.srv
+add_service_files(FILES
     getToolStatus.srv
+    lockTool.srv
+    unlockTool.srv
 )
 
-generate_messages(
-   DEPENDENCIES
-      std_msgs
+generate_messages(DEPENDENCIES
       industrial_msgs
+      std_msgs
 )
 
 
@@ -47,9 +45,17 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
+#  INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS controller_manager hardware_interface industrial_utils industrial_msgs roscpp std_msgs actionlib message_runtime
+  CATKIN_DEPENDS 
+     actionlib 
+     controller_manager 
+     hardware_interface 
+     industrial_msgs 
+     industrial_utils 
+     message_runtime
+     roscpp 
+     std_msgs 
   DEPENDS Boost
 )
 
@@ -184,7 +190,7 @@ install(TARGETS ${PROJECT_NAME}_kvp_joint_command_node kvp_joint_command_interfa
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(TARGETS kvp_ftc_interface ${PROJECT_NAME}_kvp_ftc_node 
+install(TARGETS ${PROJECT_NAME}_kvp_ftc_node kvp_ftc_interface 
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
