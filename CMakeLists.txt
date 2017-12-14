@@ -46,7 +46,7 @@ generate_messages(DEPENDENCIES
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
+#  LIBRARIES 
   CATKIN_DEPENDS 
      actionlib 
      controller_manager 
