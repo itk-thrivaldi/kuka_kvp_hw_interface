@@ -57,6 +57,16 @@ public:
   }
 
   /**
+   * @brief Check that we are connected to robot
+   *
+   * @return true is socket is open
+   */
+  bool checkSocket()
+  {
+    return socketClientCross->is_open();
+  }
+
+  /**
    * @brief For writing a variable to the robot controller, the message to send must contain a variable name (varName)
    * and a value to write (varValue).
    *
@@ -267,6 +277,36 @@ public:
   bool writeE6AXIS(const std::string* write_to, const double joint_command[12])
   {
     return writeE6AXIS(write_to, joint_command, 12);
+  }
+
+  /**
+   * @brief Write E6AXIS to KRC.
+   *
+   * @param write_to KRL E6AXIS variable name
+   * @param joint_command Map of values with A1 - E6 as keys
+   * @param joints Number of joints to write
+   *
+   * @return Currently always return true. Intended to return true\false depending on succesfull write
+   */
+  bool writeE6AXIS(const std::string* write_to, std::map<std::string, double>& joint_command, std::size_t joints)
+  {
+    double joint_cmd[12];
+
+    joint_cmd[0] = joint_command["A1"];
+    joint_cmd[1] = joint_command["A2"];
+    joint_cmd[2] = joint_command["A3"];
+    joint_cmd[3] = joint_command["A4"];
+    joint_cmd[4] = joint_command["A5"];
+    joint_cmd[5] = joint_command["A6"];
+
+    joint_cmd[6] = joint_command["E1"];
+    joint_cmd[7] = joint_command["E2"];
+    joint_cmd[8] = joint_command["E3"];
+    joint_cmd[9] = joint_command["E4"];
+    joint_cmd[10] = joint_command["E5"];
+    joint_cmd[11] = joint_command["E6"];
+
+    return writeE6AXIS(write_to, joint_cmd, joints);
   }
 
   /**
