@@ -72,8 +72,6 @@ void KVPJointTrajectoryInterface::cancelCB(ActionServer::GoalHandle gh)
 void KVPJointTrajectoryInterface::goalCB(ActionServer::GoalHandle gh)
 {
   // Check that joint names match
-  std::vector<std::string> vec1 = gh.getGoal()->trajectory.joint_names;
-  std::vector<std::string> vec2 = joint_names_;
   if (!std::is_permutation(gh.getGoal()->trajectory.joint_names.begin(), gh.getGoal()->trajectory.joint_names.end(),
                            joint_names_.begin()))
   {
