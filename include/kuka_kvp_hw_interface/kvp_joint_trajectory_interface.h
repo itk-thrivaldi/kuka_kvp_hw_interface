@@ -59,8 +59,8 @@ protected:
   std::string ip_;
   std::string kvp_write_to_;
 
-  bool isCurrentMotion(double* wanted);
-  std::map<std::string, double> trajectoryPoint2exa6is(std::vector<std::string> joint_names,
+  bool isCurrentMotion(std::map<std::string, double> wanted);
+  std::map<std::string, double> trajectoryPoint2e6axis(std::vector<std::string> joint_names,
                                                        trajectory_msgs::JointTrajectoryPoint point);
 
 private:
@@ -77,8 +77,6 @@ private:
   ActionServer::GoalHandle gh_;
 
   void executeTrajectory();
-  void traj2joint(std::vector<std::string> joint_names, trajectory_msgs::JointTrajectoryPoint point,
-                  double* joint_command);
 
 public:
   KVPJointTrajectoryInterface(ros::NodeHandle& nh);
