@@ -125,7 +125,7 @@ void KVPJointTrajectoryInterface::executeTrajectory()
     // Unlock mutex
     mutex_.unlock();
 
-    ROS_INFO("Got new trajectory with %i points", trajectory.points.size());
+    ROS_INFO("Got new trajectory with %lu points", trajectory.points.size());
     // Loop over points
     for (auto point : trajectory.points)
     {
