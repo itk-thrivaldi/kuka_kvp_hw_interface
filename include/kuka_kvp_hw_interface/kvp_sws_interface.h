@@ -71,7 +71,7 @@ public:
    */
   bool lock(kuka_kvp_hw_interface::lockTool::Request& req, kuka_kvp_hw_interface::lockTool::Response& res);
 
-  /** \biref Unlock toolchanger
+  /** \brief Unlock toolchanger
    */
   bool unlock(kuka_kvp_hw_interface::lockTool::Request& req, kuka_kvp_hw_interface::lockTool::Response& res);
 
