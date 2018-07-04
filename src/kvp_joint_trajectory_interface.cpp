@@ -72,8 +72,6 @@ void KVPJointTrajectoryInterface::cancelCB(ActionServer::GoalHandle gh)
 void KVPJointTrajectoryInterface::goalCB(ActionServer::GoalHandle gh)
 {
   // Check that joint names match
-  std::vector<std::string> vec1 = gh.getGoal()->trajectory.joint_names;
-  std::vector<std::string> vec2 = joint_names_;
   if (!std::is_permutation(gh.getGoal()->trajectory.joint_names.begin(), gh.getGoal()->trajectory.joint_names.end(),
                            joint_names_.begin()))
   {
@@ -125,19 +123,16 @@ void KVPJointTrajectoryInterface::executeTrajectory()
     // Unlock mutex
     mutex_.unlock();
 
-    ROS_INFO("Got new trajectory with %i points", trajectory.points.size());
+    ROS_INFO("Got new trajectory with %lu points", trajectory.points.size());
     // Loop over points
     for (auto point : trajectory.points)
     {
-      // Order points according to joint_names_
-      double joint_command[num_joints_];
-      traj2joint(trajectory.joint_names, point, joint_command);
+      // Map point to E6AXIS
+      std::map<std::string, double> joint_command = trajectoryPoint2e6axis(trajectory.joint_names, point);
 
       // Send point to robot
       robot_.writeE6AXIS(&kvp_write_to_, joint_command, num_joints_);
 
-      // Map point to E6AXIS
-      std::map<std::string, double> e6axis = trajectoryPoint2exa6is(trajectory.joint_names, point);
       // Wait for execution of point to start
       while (!isCurrentMotion(joint_command))
       {
@@ -180,58 +175,72 @@ void KVPJointTrajectoryInterface::executeTrajectory()
   }  // while
 }
 
-void KVPJointTrajectoryInterface::traj2joint(std::vector<std::string> joint_names,
-                                             trajectory_msgs::JointTrajectoryPoint point, double* joint_command)
-{
-  static const double RAD2DEG = 57.295779513082323;
-  std::map<std::string, double> tmp;
-  for (size_t i = 0; i < joint_names.size(); ++i)
-  {
-    tmp[joint_names[i]] = point.positions[i] * RAD2DEG;
-  }
-
-  for (std::size_t i = 0; i < num_joints_; i++)
-  {
-    joint_command[i] = tmp[joint_names_[i]];
-  }
-}
-
-std::map<std::string, double> KVPJointTrajectoryInterface::trajectoryPoint2exa6is(
-    std::vector<std::string> joint_names, trajectory_msgs::JointTrajectoryPoint point)
+std::map<std::string, double> KVPJointTrajectoryInterface::trajectoryPoint2e6axis(
+    std::vector<std::string> traj_joint_names, trajectory_msgs::JointTrajectoryPoint point)
 {
   static const double RAD2DEG = 57.295779513082323;
   std::map<std::string, double> tmp;
   std::map<std::string, double> e6axis;
   std::string kuka_joints[12] = { "A1", "A2", "A3", "A4", "A5", "A6", "E1", "E2", "E3", "E4", "E5", "E6" };
 
-  for (size_t i = 0; i < joint_names.size(); ++i)
+  // Assumptions:
+  // joint_names_ from parameter server is in order A1-A6 E1-E6
+  // A1-A6 is revolute
+  // E1-E6 is linear
+
+  // Order joints from A1 to E6.
+  // Done in two steps we don't controll the trajectory order
+
+  // Move points to a named array
+  for (size_t i = 0; i < num_joints_; i++)
   {
-    tmp[joint_names[i]] = point.positions[i] * RAD2DEG;
+    tmp[traj_joint_names[i]] = point.positions[i];
   }
 
+  // Create E6AXIS map
   for (std::size_t i = 0; i < num_joints_; i++)
   {
-    e6axis[kuka_joints[i]] == tmp[joint_names_[i]];
+    e6axis[kuka_joints[i]] = tmp[joint_names_[i]];
+  }
+
+  // End order joints
+
+  // Convert A1-A6 to degrees
+  for (size_t i = 0; i < 6; i++)
+  {
+    e6axis[kuka_joints[i]] = e6axis[kuka_joints[i]] * RAD2DEG;
+  }
+
+  // Convert E1-E6 to mm
+  for (size_t i = 6; i < num_joints_; i++)
+  {
+    e6axis[kuka_joints[i]] = e6axis[kuka_joints[i]] * 1000;
   }
 
   return e6axis;
 }
 
-bool KVPJointTrajectoryInterface::isCurrentMotion(double* wanted)
+bool KVPJointTrajectoryInterface::isCurrentMotion(std::map<std::string, double> wanted)
 {
-  double actual[12];
+  std::map<std::string, double> actual;
   std::string read_from = "$AXIS_FOR";
 
   if (!robot_.readE6AXIS(&read_from, actual))
   {
-    ROS_ERROR("Error reading from robot");
-    return false;
+    ROS_DEBUG("Error reading from robot. Is $AXIS_FOR empty?");
+
+    // Check that we are still connected to robot
+    if (!robot_.checkSocket())
+    {
+      ROS_ERROR("Disconnected from robot");
+      throw std::runtime_error("Disconnected from robot");
+    }
   }
 
   // Do a rough compare
-  for (size_t i = 0; i < num_joints_; i++)
+  for (auto& it : actual)
   {
-    if ((actual[i] > wanted[i] + 2) || (actual[i] < wanted[i] - 2))
+    if ((it.second > wanted[it.first] + 2) || (it.second < wanted[it.first] - 2))
     {
       return false;
     }
