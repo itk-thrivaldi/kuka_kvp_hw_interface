@@ -34,7 +34,7 @@ namespace kuka_kvp_hw_interface {
     robot.connectSocket(ip_, "7000"); // TODO: Get port from param server
 
     // Write value
-    if (!robot.writebool(write_to, &value)) {
+    if (!robot.writeBool(&name, &value)) {
       ROS_ERROR("Failed to write to robot");
       robot.disconnectSocket();
       return false;
@@ -44,10 +44,10 @@ namespace kuka_kvp_hw_interface {
     ros::Duration(0.1).sleep();
 
     // Poll value from robot to check success
-    if (!robot.readBool(write_to, status)) {
+    if (!robot.readBool(&name, status)) {
       ROS_ERROR("Failed to read from robot");
       robot.disconnectSocket();
-      return false
+      return false;
     }
     robot.disconnectSocket();
     if (status == value) {
@@ -65,8 +65,8 @@ namespace kuka_kvp_hw_interface {
     }
     return true;
   }
-  bool KVPVariableInterface::getBool(kuka_kvp_hw_interface::setBool::Request& req,
-				     kuka_kvp_hw_interface::setBool::Response& res) {
+  bool KVPVariableInterface::getBool(kuka_kvp_hw_interface::getBool::Request& req,
+				     kuka_kvp_hw_interface::getBool::Response& res) {
     BoostClientCross robot;
     robot.connectSocket(ip_, "7000"); // TODO: Get port from param server
     bool status;
