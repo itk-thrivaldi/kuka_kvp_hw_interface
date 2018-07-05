@@ -69,3 +69,5 @@ namespace kuka_kvp_hw_interface {
 		 kuka_kvp_hw_interface::setBool::Response& res);
   };
 }
+
+#endif //KVP_VARIABLE_INTERFACE_H
