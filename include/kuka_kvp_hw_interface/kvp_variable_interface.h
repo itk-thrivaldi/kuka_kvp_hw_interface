@@ -30,8 +30,8 @@ language governing permissions and limitations under the License.
 
 #include <industrial_msgs/TriState.h>
 #include <industrial_msgs/ServiceReturnCode.h>
-#include <kuka_kvp_hw_interface/setBool.h>
-#include <kuka_kvp_hw_interface/getBool.h>
+#include <kuka_kvp_hw_interface/SetBool.h>
+#include <kuka_kvp_hw_interface/GetBool.h>
 
 // KVP Communication
 #include <BoostClientCross.h>
@@ -60,13 +60,13 @@ namespace kuka_kvp_hw_interface {
 
     /** \brief Get state of boolean in KRC
      */
-    bool getBool(kuka_kvp_hw_interface::getBool::Request& req,
-		 kuka_kvp_hw_interface::getBool::Response& res);
+    bool getBool(kuka_kvp_hw_interface::GetBool::Request& req,
+		 kuka_kvp_hw_interface::GetBool::Response& res);
 
     /** \brief Set state of boolean in KRC
      */
-    bool setBool(kuka_kvp_hw_interface::setBool::Request& req,
-		 kuka_kvp_hw_interface::setBool::Response& res);
+    bool setBool(kuka_kvp_hw_interface::SetBool::Request& req,
+		 kuka_kvp_hw_interface::SetBool::Response& res);
   };
 }
 
