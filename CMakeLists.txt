@@ -25,8 +25,8 @@ add_service_files(FILES
     getToolStatus.srv
     lockTool.srv
     unlockTool.srv
-    getBool.srv
-    setBool.srv
+    GetBool.srv
+    SetBool.srv
 )
 
 generate_messages(DEPENDENCIES
