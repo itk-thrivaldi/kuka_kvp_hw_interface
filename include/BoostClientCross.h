@@ -216,7 +216,7 @@ public:
     if (socketError)
       throw boost::system::system_error(socketError);
   }
-
+  
   /**
    * @brief Write E6AXIS to KRC.
    *
@@ -225,7 +225,7 @@ public:
    * @param joints Number of joint values to send
    * @param out Formatted string sent to KRC is stored to this variable
    *
-   * @return Currently always returns true. Inteded to return true\false depning on succesfull write
+   * @return Currently always returns true. Inteded to return true\false depning on successful write.
    */
   bool writeE6AXIS(const std::string* write_to, const double* joint_command, const std::size_t joints, std::string* out)
   {
