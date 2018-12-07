@@ -503,6 +503,148 @@ public:
     return true;
   }
 
+  /**
+   * @brief Write KRL Frame to KRC.
+   *
+   * @param write_to KRL Frame variable name
+   * @param position_command Cartesian position, in order X, Y, Z
+   * @param orientation_command Roll, pitch, yaw, using ZYX convention
+   * @param out Formatted string sent to the KRC is stored in this variable
+   *
+   * @return Currently always returns true. Intended to return true/false depending on successful write.
+   */
+  bool writeFrame(const std::string* write_to, const double* position_command, const double* orientation_command, std::string* out)
+  {
+    *out = "{FRAME: ";
+    *out += " X" + str::to_string(position_command[0]) + ",";
+    *out += " Y" + str::to_string(position_command[1]) + ",";
+    *out += " Z" + str::to_string(position_command[2]) + ",";
+    *out += " A" + str::to_string(orientation_command[2]) + ",";
+    *out += " B" + str::to_string(orientation_command[1]) + ",";
+    *out += " C" + str::to_string(orientation_command[0]) + ",";
+    out->back() = "}";
+
+    std::vector<unsigned char> out_vector(out->begin(), out->end());
+    std::vector<unsigned char> var(write_to->begin(), write_to->end());
+    std::vector<unsigned char> formated_out = this->formatWriteMsg(var, out_vector);
+    std::vector<unsigned char> reply = this->sendMsg(formated_out);
+    return true;
+  }
+
+  /**
+   * @brief Write KRL Frame to KRC.
+   *
+   * @param write_to KRL Frame variable name
+   * @param position_command Cartesian position, in order X, Y, Z
+   * @param orientation_command Roll, pitch, yaw, using ZYX convention
+   *
+   * @return Currently always returns true. Intended to return true/false depending on successful write.
+   */
+  bool writeFrame(const std::string* write_to, const double* position_command, const double* orientation_command)
+  {
+    std::string dummy;
+    return writeFrame(write_to, position_command, orientation_command, &dummy);
+  }
+
+  /**
+   * @brief Write KRL Frame to KRC.
+   *
+   * @param write_to KRL Frame variable name
+   * @param frame_command Map of values with X,Y,Z, ROLL, PITCH, YAW as keys
+   *
+   * @return Currently always returns true. Intended to return true/false depending on successful write.
+   */
+  bool writeFrame(const std::string* write_to, std::map<std::string, double>& frame_command);
+  {
+    double position_command[3];
+    position_command[0] = frame_command["X"];
+    position_command[1] = frame_command["Y"];
+    position_command[2] = frame_command["Z"];
+    double orientation_command[3];
+    orientation_command[0] = frame_command["ROLL"];
+    orientation_command[1] = frame_command["PITCH"];
+    orientation_command[2] = frame_command["YAW"];
+    return writeFrame(write_to, position_command, orientation_command);
+  }
+
+  /**
+   * @brief Read KRL Frame to KRC.
+   *
+   * @param read_from KRL Frame variable to read from
+   * @param Frame Map of values with X,Y,Z,ROLL,PITCH, YAW as keys that we write to
+   *
+   * @return Returns false if read fails.
+   */
+  bool readFrame(const std::string* read_from, std::map<std::string, double>& frame)
+  {
+    std::vector<unsigned char> var(read_from->begin(), read_from->end());
+    std::vector<unsigned char> formated_read = this->formatReadMsg(var);
+    std::vector<unsigned char> reply = this->sendMsg(formated_read);
+    if (reply.size() == 0)
+      {
+	return false;
+      }
+
+    std::string act_frame(reply.begin(), reply.end());
+
+    // Check that we got at least one ,
+    if (act_frame.find(",") == std::string::npos)
+      {
+	return false;
+      }
+
+    // Remove var name and trailing }
+    act_frame = act_frame.substr(act_frame.find(": ")+1);
+    act_frame.pop_back();
+    typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
+
+    boost::char_separator<char> sep(", ");
+    tokenizer tokens(act_frame, sep);
+    tokenizer::iterator tok_var = tokens.begin();
+    tokenizer::iterator tok_Value;
+
+    for (; tok_var != tokens.end(); std::advance(tok_var, 2))
+      {
+	tok_value = tok_var;
+	tok_value++;
+	try
+	  {
+	    frame[*tok_var] = std::stod(*tok_value);
+	  }
+	catch (const std::invalid_argument& e)
+	  {
+	    return false;
+	  }
+      }
+    return true;
+  }
+
+  /**
+   * @brief Read KRL Frame to KRC.
+   *
+   * @param read_from KRL Frame variable to read from
+   * @param position[3] XYZ cartesian position
+   * @param orientation[3] roll, pitch, yaw in XYZ convention
+   *
+   * @return Returns false if read fails.
+   */
+  bool readFrame(const std::string* read_from, double position[3], double orientation[3])
+  {
+    std::map<std::string, double> frame_map;
+    bool ret = readFrame(read_from, frame_map);
+    if (!ret)
+      {
+	return false;
+      }
+    position[0] = frame_map["X"];
+    position[1] = frame_map["Y"];
+    position[2] = frame_map["Z"];
+    orientation[0] = frame_map["ROLL"];
+    orientation[1] = frame_map["PITCH"];
+    orientation[2] = frame_map["YAW"];
+
+    return true;
+  }
 };  // class
 
 #endif
