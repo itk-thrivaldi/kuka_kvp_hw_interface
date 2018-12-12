@@ -455,7 +455,6 @@ public:
   bool readBool(const std::string* read_from, bool& output)
   {
     std::vector<unsigned char> var(read_from->begin(), read_from->end());
-
     std::vector<unsigned char> formated_read = this->formatReadMsg(var);
     std::vector<unsigned char> reply = this->sendMsg(formated_read);
     if (reply.size() == 0)
@@ -514,15 +513,14 @@ public:
   bool readReal(const std::string* read_from, double& output)
   {
     std::vector<unsigned char> var(read_from->begin(), read_from->end());
-
     std::vector<unsigned char> formated_read = this->formatReadMsg(var);
     std::vector<unsigned char> reply = this->sendMsg(formated_read);
     std::string value(reply.begin(), reply.end());
     try
       {
-	output = std::stod(*value);
+	output = std::stod(value);
       }
-    catch (constr std::invalid_argument& e)
+    catch (const std::invalid_argument& e)
       {
 	return false;
       }
@@ -537,9 +535,9 @@ public:
    *
    * @return Returns false on error $TODO: Fix this
    */
-  bool writeRead(const std::string* write_to, const double* value)
+  bool writeReal(const std::string* write_to, const double* value)
   {
-    std::string out = str::to_string(*value);
+    std::string out = std::to_string(*value);
 
     std::vector<unsigned char> out_vector(out.begin(), out.end());
     std::vector<unsigned char> var(write_to->begin(), write_to->end());
@@ -563,12 +561,13 @@ public:
 
     std::vector<unsigned char> formated_read = this->formatReadMsg(var);
     std::vector<unsigned char> reply = this->sendMsg(formated_read);
-    std::string value(reply.begin(), reply.end());
+    std::string svalue(reply.begin(), reply.end());
+    std::cout << "OUTPUT" << svalue << std::endl;
     try
       {
-	output = std::stod(*value);
+	output = std::stoi(svalue);
       }
-    catch (constr std::invalid_argument& e)
+    catch (const std::invalid_argument& e)
       {
 	return false;
       }
@@ -583,9 +582,9 @@ public:
    *
    * @return Returns false on error $TODO: Fix this
    */
-  bool writeRead(const std::string* write_to, const int* value)
+  bool writeInt(const std::string* write_to, const int* value)
   {
-    std::string out = str::to_string(*value);
+    std::string out = std::to_string(*value);
 
     std::vector<unsigned char> out_vector(out.begin(), out.end());
     std::vector<unsigned char> var(write_to->begin(), write_to->end());
@@ -609,13 +608,13 @@ public:
   bool writeFrame(const std::string* write_to, const double* position_command, const double* orientation_command, std::string* out)
   {
     *out = "{FRAME: ";
-    *out += " X" + str::to_string(position_command[0]) + ",";
-    *out += " Y" + str::to_string(position_command[1]) + ",";
-    *out += " Z" + str::to_string(position_command[2]) + ",";
-    *out += " A" + str::to_string(orientation_command[2]) + ",";
-    *out += " B" + str::to_string(orientation_command[1]) + ",";
-    *out += " C" + str::to_string(orientation_command[0]) + ",";
-    out->back() = "}";
+    *out += " X" + std::to_string(position_command[0]) + ",";
+    *out += " Y" + std::to_string(position_command[1]) + ",";
+    *out += " Z" + std::to_string(position_command[2]) + ",";
+    *out += " A" + std::to_string(orientation_command[2]) + ",";
+    *out += " B" + std::to_string(orientation_command[1]) + ",";
+    *out += " C" + std::to_string(orientation_command[0]) + ",";
+    out->back() = '}';
 
     std::vector<unsigned char> out_vector(out->begin(), out->end());
     std::vector<unsigned char> var(write_to->begin(), write_to->end());
@@ -647,7 +646,7 @@ public:
    *
    * @return Currently always returns true. Intended to return true/false depending on successful write.
    */
-  bool writeFrame(const std::string* write_to, std::map<std::string, double>& frame_command);
+  bool writeFrame(const std::string* write_to, std::map<std::string, double>& frame_command)
   {
     double position_command[3];
     position_command[0] = frame_command["X"];
@@ -694,7 +693,7 @@ public:
     boost::char_separator<char> sep(", ");
     tokenizer tokens(act_frame, sep);
     tokenizer::iterator tok_var = tokens.begin();
-    tokenizer::iterator tok_Value;
+    tokenizer::iterator tok_value;
 
     for (; tok_var != tokens.end(); std::advance(tok_var, 2))
       {

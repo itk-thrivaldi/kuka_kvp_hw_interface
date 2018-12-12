@@ -29,11 +29,10 @@ namespace kuka_kvp_hw_interface {
     }
   }
   
-  bool KVPVariableInterface::write(const std::string& name, bool value) {
+  bool KVPVariableInterface::writeBool(const std::string& name, bool value) {
     bool status;
     BoostClientCross robot;
     robot.connectSocket(ip_, "7000"); // TODO: Get port from param server
-
     // Write value
     if (!robot.writeBool(&name, &value)) {
       ROS_ERROR("Failed to write to robot.");
@@ -57,10 +56,9 @@ namespace kuka_kvp_hw_interface {
     return false;
   }
 
-  bool KVPVariableInterface::write(const std::string& name, int value) {
+  bool KVPVariableInterface::writeInt(const std::string& name, int value) {
     BoostClientCross robot;
     robot.connectSocket(ip_, "7000"); // TODO: get port from param server
-
     // Write value
     if (!robot.writeInt(&name, &value)) {
       ROS_ERROR("Failed to write to robot.");
@@ -68,10 +66,11 @@ namespace kuka_kvp_hw_interface {
       return false; 
     }
     // TODO: check for success
+    robot.disconnectSocket();
     return true;
   }
 
-  bool KVPVariableInterface::write(const std::string& name, double value) {
+  bool KVPVariableInterface::writeFloat(const std::string& name, double value) {
     BoostClientCross robot;
     robot.connectSocket(ip_, "7000");
 
@@ -81,7 +80,8 @@ namespace kuka_kvp_hw_interface {
       robot.disconnectSocket();
       return false;
     }
-    // TODO: check for success
+    // TODO: check for succes
+    robot.disconnectSocket();
     return true;
   }
   
@@ -109,7 +109,7 @@ namespace kuka_kvp_hw_interface {
 
   bool KVPVariableInterface::setBool(kuka_kvp_hw_interface::SetBool::Request& req,
 				     kuka_kvp_hw_interface::SetBool::Response& res) {
-    if (write(req.name, req.value)) {
+    if (writeBool(req.name, req.value)) {
       res.code.val = industrial_msgs::ServiceReturnCode::SUCCESS;
     } else {
       res.code.val = industrial_msgs::ServiceReturnCode::FAILURE;
@@ -129,12 +129,13 @@ namespace kuka_kvp_hw_interface {
     }
 
     res.value = value;
+    robot.disconnectSocket();
     return true;
   }
 
   bool KVPVariableInterface::setInt(kuka_kvp_hw_interface::SetInt::Request& req,
-				    kuka_Kvp_hw_interface::SetInt::Response& res) {
-    if (write(req.name, req.value)) {
+				    kuka_kvp_hw_interface::SetInt::Response& res) {
+    if (writeInt(req.name, req.value)) {
       res.code.val = industrial_msgs::ServiceReturnCode::SUCCESS;
     } else {
       res.code.val = industrial_msgs::ServiceReturnCode::FAILURE;
@@ -142,24 +143,25 @@ namespace kuka_kvp_hw_interface {
     return true;
   }
 
-  bool KVPVariableInterface::getFloat(kuka_kvp_hw_interface::GetInt::Request& req,
-				      kuka_kvp_hw_interface::GetInt::Response& res) {
+  bool KVPVariableInterface::getFloat(kuka_kvp_hw_interface::GetFloat::Request& req,
+				      kuka_kvp_hw_interface::GetFloat::Response& res) {
     BoostClientCross robot;
     robot.connectSocket(ip_, "7000"); //TODO: get port from parameter server
     double value;
-    if (!robot.readInt(&req.name, value)) {
+    if (!robot.readReal(&req.name, value)) {
       ROS_ERROR("Failed to read from robot.");
       robot.disconnectSocket();
       return false;
     }
 
     res.value = value;
+    robot.disconnectSocket();
     return true;
   }
 
-  bool KVPVariableInterface::setFloat(kuka_kvp_hw_interface::SetInt::Request& req,
-				    kuka_Kvp_hw_interface::SetInt::Response& res) {
-    if (write(req.name, req.value)) {
+  bool KVPVariableInterface::setFloat(kuka_kvp_hw_interface::SetFloat::Request& req,
+				      kuka_kvp_hw_interface::SetFloat::Response& res) {
+    if (writeFloat(req.name, req.value)) {
       res.code.val = industrial_msgs::ServiceReturnCode::SUCCESS;
     } else {
       res.code.val = industrial_msgs::ServiceReturnCode::FAILURE;

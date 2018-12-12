@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+    <rosparam file="$(find kuka_kvp_hw_interface)/config/params.yaml" command="load" />
+    <node name="kuka_kvp_variable_interface" pkg="kuka_kvp_hw_interface" type="kvp_variable_node" respawn="false" output="screen" required="true" />
+ </launch>

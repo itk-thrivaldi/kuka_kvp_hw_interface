@@ -58,7 +58,7 @@ namespace kuka_kvp_hw_interface {
      *
      * @return True on success 
      */
-    bool write(const std::string& name, bool value);
+    bool writeBool(const std::string& name, bool value);
 
     /**
      * @brief Private method for sending int variable to robot 
@@ -68,7 +68,7 @@ namespace kuka_kvp_hw_interface {
      *
      * @return True on success (TODO)
      */
-    bool write(const std::string& name, int value);
+    bool writeInt(const std::string& name, int value);
 
     /**
      * @brief Private method for sending float variable to robot 
@@ -77,7 +77,7 @@ namespace kuka_kvp_hw_interface {
      *
      * @return True on success (TODO)
      */
-    bool write(const std::string& name, double value);
+    bool writeFloat(const std::string& name, double value);
     
   public:
     KVPVariableInterface(ros::NodeHandle& nh);
@@ -94,19 +94,19 @@ namespace kuka_kvp_hw_interface {
     /** \brief Get int in KRC
      */
     bool getInt(kuka_kvp_hw_interface::GetInt::Request& req,
-	       kuka_kvp_hw_interface::GetInt::Response& res);
+	        kuka_kvp_hw_interface::GetInt::Response& res);
     /** \brief Set int in KRC. Only Int32.
      */
     bool setInt(kuka_kvp_hw_interface::SetInt::Request& req,
 		kuka_kvp_hw_interface::SetInt::Response& res);
     /** \brief Get float in KRC. Only float32.
      */
-    bool getFloat(kuka_kvp_hw_interface::GetFloat& req,
-		  kuka_kvp_hw_interface::GetFloat& res);
+    bool getFloat(kuka_kvp_hw_interface::GetFloat::Request& req,
+		  kuka_kvp_hw_interface::GetFloat::Response& res);
     /** \brief Set float in KRC. Only float32.
      */
-    bool setFloat(kuka_kvp_hw_interface::SetFloat& req,
-		  kuka_kvp_hw_interface::SetFloat& res);
+    bool setFloat(kuka_kvp_hw_interface::SetFloat::Request& req,
+		  kuka_kvp_hw_interface::SetFloat::Response& res);
     
   };
 }
