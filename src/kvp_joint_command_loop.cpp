@@ -30,7 +30,7 @@ KVPJointCommandLoop::KVPJointCommandLoop(ros::NodeHandle& nh,
   stopwatch_last_ = std::chrono::steady_clock::now();
 
   // Timer with callback
-  control_loop_ = nh_.createTimer(ros::Duration(0.12), &KVPJointCommandLoop::controlUpdate, this);
+  control_loop_ = nh_.createTimer(ros::Duration(0.012), &KVPJointCommandLoop::controlUpdate, this);
 }
 
 void KVPJointCommandLoop::controlUpdate(const ros::TimerEvent& event)

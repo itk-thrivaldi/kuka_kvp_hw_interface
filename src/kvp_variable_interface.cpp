@@ -56,8 +56,8 @@ namespace kuka_kvp_hw_interface {
     return false;
   }
   
-  bool KVPVariableInterface::setBool(kuka_kvp_hw_interface::setBool::Request& req,
-				     kuka_kvp_hw_interface::setBool::Response& res) {
+  bool KVPVariableInterface::setBool(kuka_kvp_hw_interface::SetBool::Request& req,
+				     kuka_kvp_hw_interface::SetBool::Response& res) {
     if (write(req.name, req.value)) {
       res.code.val = industrial_msgs::ServiceReturnCode::SUCCESS;
     } else {
@@ -65,8 +65,8 @@ namespace kuka_kvp_hw_interface {
     }
     return true;
   }
-  bool KVPVariableInterface::getBool(kuka_kvp_hw_interface::getBool::Request& req,
-				     kuka_kvp_hw_interface::getBool::Response& res) {
+  bool KVPVariableInterface::getBool(kuka_kvp_hw_interface::GetBool::Request& req,
+				     kuka_kvp_hw_interface::GetBool::Response& res) {
     BoostClientCross robot;
     robot.connectSocket(ip_, "7000"); // TODO: Get port from param server
     bool status;
