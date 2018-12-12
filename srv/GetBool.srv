@@ -1,0 +1,3 @@
+string name
+---
+industrial_msgs/TriState status

@@ -47,7 +47,7 @@ KVPJointTrajectoryInterface::KVPJointTrajectoryInterface(ros::NodeHandle& nh)
   // Connect to robot
   connect();
 
-  action_server_.reset(new ActionServer(nh_, "follow_joint_trajectory",
+  action_server_.reset(new ActionServer(nh_, "joint_trajectory_action",
                                         boost::bind(&KVPJointTrajectoryInterface::goalCB, this, _1),
                                         boost::bind(&KVPJointTrajectoryInterface::cancelCB, this, _1), false));
   action_server_->start();

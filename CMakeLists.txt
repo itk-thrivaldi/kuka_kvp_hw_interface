@@ -25,6 +25,8 @@ add_service_files(FILES
     getToolStatus.srv
     lockTool.srv
     unlockTool.srv
+    GetBool.srv
+    SetBool.srv
 )
 
 generate_messages(DEPENDENCIES
@@ -88,6 +90,11 @@ add_library(kvp_sws_interface
   src/kvp_sws_interface.cpp
 )
 add_dependencies(kvp_sws_interface ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_library(kvp_variable_interface
+  src/kvp_variable_interface.cpp
+)
+add_dependencies(kvp_variable_interface ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_library(kvp_joint_trajectory_interface
   src/kvp_joint_trajectory_interface.cpp
@@ -159,7 +166,17 @@ target_link_libraries(${PROJECT_NAME}_kvp_sws_node
    ${Boost_LIBRARIES}
    ${boost_LIBRARIES}
  )
-
+ 
+add_executable(${PROJECT_NAME}_kvp_variable_node src/kvp_variable_node.cpp)
+set_target_properties(${PROJECT_NAME}_kvp_variable_node PROPERTIES OUTPUT_NAME kvp_variable_node PREFIX "")
+add_dependencies(${PROJECT_NAME}_kvp_variable_node ${PROJECT_NAME}_generate_messages_cpp ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_kvp_variable_node
+   kvp_variable_interface
+   ${catkin_LIBRARIES}
+   ${Boost_LIBRARIES}
+   ${boost_LIBRARIES}
+ )
+ 
 add_executable(${PROJECT_NAME}_kvp_joint_trajectory_node src/kvp_joint_trajectory_node.cpp)
 set_target_properties(${PROJECT_NAME}_kvp_joint_trajectory_node PROPERTIES OUTPUT_NAME kvp_joint_trajectory_node PREFIX "")
 target_link_libraries(${PROJECT_NAME}_kvp_joint_trajectory_node
@@ -200,6 +217,11 @@ install(TARGETS ${PROJECT_NAME}_kvp_sws_node kvp_sws_interface
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+install(TARGETS ${PROJECT_NAME}_kvp_variable_node kvp_variable_interface
+   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+ 
 install(TARGETS ${PROJECT_NAME}_kvp_joint_trajectory_node kvp_joint_trajectory_interface
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

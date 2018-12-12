@@ -35,10 +35,10 @@ KVPJointCommandInterface::KVPJointCommandInterface(ros::NodeHandle& nh)
   // Need IP on paramter server
   if (!nh.getParam("robot_ip_address", ip_))
   {
-    ROS_ERROR("Cannot find required parameter 'ip' "
+    ROS_ERROR("Cannot find required parameter 'robot_ip_address' "
               "on the parameter server.");
     throw std::runtime_error("Cannot find required parameter "
-                             "'ip' on the parameter server.");
+                             "'robot_ip_address' on the parameter server.");
   }
 
   // Resize joint states
