@@ -504,6 +504,99 @@ public:
   }
 
   /**
+   * @brief Reads REAL (double) variable from KRC
+   *
+   * @param read_from Variable to read from
+   * @param output Store value to this variable
+   *
+   * @return Returns false on error
+   */
+  bool readReal(const std::string* read_from, double& output)
+  {
+    std::vector<unsigned char> var(read_from->begin(), read_from->end());
+
+    std::vector<unsigned char> formated_read = this->formatReadMsg(var);
+    std::vector<unsigned char> reply = this->sendMsg(formated_read);
+    std::string value(reply.begin(), reply.end());
+    try
+      {
+	output = std::stod(*value);
+      }
+    catch (constr std::invalid_argument& e)
+      {
+	return false;
+      }
+    return true;
+  }
+
+  /**
+   * @brief Write REAL (double )value to KRC
+   *
+   * @param write_to Variable to write to
+   * @param value Value to set
+   *
+   * @return Returns false on error $TODO: Fix this
+   */
+  bool writeRead(const std::string* write_to, const double* value)
+  {
+    std::string out = str::to_string(*value);
+
+    std::vector<unsigned char> out_vector(out.begin(), out.end());
+    std::vector<unsigned char> var(write_to->begin(), write_to->end());
+    std::vector<unsigned char> formated_out = this->formatWriteMsg(var, out_vector);
+    std::vector<unsigned char> reply = this->sendMsg(formated_out);
+    // TODO: Check reply from server and return true/false based on this
+    return true;
+  }
+
+  /**
+   * @brief Reads INT variable from KRC
+   *
+   * @param read_from Variable to read from
+   * @param output Store value to this variable
+   *
+   * @return Returns false on error
+   */
+  bool readInt(const std::string* read_from, int& output)
+  {
+    std::vector<unsigned char> var(read_from->begin(), read_from->end());
+
+    std::vector<unsigned char> formated_read = this->formatReadMsg(var);
+    std::vector<unsigned char> reply = this->sendMsg(formated_read);
+    std::string value(reply.begin(), reply.end());
+    try
+      {
+	output = std::stod(*value);
+      }
+    catch (constr std::invalid_argument& e)
+      {
+	return false;
+      }
+    return true;
+  }
+
+  /**
+   * @brief Write INT value to KRC
+   *
+   * @param write_to Variable to write to
+   * @param value Value to set
+   *
+   * @return Returns false on error $TODO: Fix this
+   */
+  bool writeRead(const std::string* write_to, const int* value)
+  {
+    std::string out = str::to_string(*value);
+
+    std::vector<unsigned char> out_vector(out.begin(), out.end());
+    std::vector<unsigned char> var(write_to->begin(), write_to->end());
+    std::vector<unsigned char> formated_out = this->formatWriteMsg(var, out_vector);
+    std::vector<unsigned char> reply = this->sendMsg(formated_out);
+    // TODO: Check reply from server and return true/false based on this
+    return true;
+  }
+  
+  
+  /**
    * @brief Write KRL Frame to KRC.
    *
    * @param write_to KRL Frame variable name
