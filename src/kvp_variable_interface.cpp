@@ -28,6 +28,7 @@ namespace kuka_kvp_hw_interface {
 			       "'robot_ip_address' on the parameter server.");
     }
   }
+  
   bool KVPVariableInterface::write(const std::string& name, bool value) {
     bool status;
     BoostClientCross robot;
@@ -35,7 +36,7 @@ namespace kuka_kvp_hw_interface {
 
     // Write value
     if (!robot.writeBool(&name, &value)) {
-      ROS_ERROR("Failed to write to robot");
+      ROS_ERROR("Failed to write to robot.");
       robot.disconnectSocket();
       return false;
     }
@@ -45,7 +46,7 @@ namespace kuka_kvp_hw_interface {
 
     // Poll value from robot to check success
     if (!robot.readBool(&name, status)) {
-      ROS_ERROR("Failed to read from robot");
+      ROS_ERROR("Failed to read from robot.");
       robot.disconnectSocket();
       return false;
     }
@@ -55,16 +56,35 @@ namespace kuka_kvp_hw_interface {
     }
     return false;
   }
-  
-  bool KVPVariableInterface::setBool(kuka_kvp_hw_interface::SetBool::Request& req,
-				     kuka_kvp_hw_interface::SetBool::Response& res) {
-    if (write(req.name, req.value)) {
-      res.code.val = industrial_msgs::ServiceReturnCode::SUCCESS;
-    } else {
-      res.code.val = industrial_msgs::ServiceReturnCode::FAILURE;
+
+  bool KVPVariableInterface::write(const std::string& name, int value) {
+    BoostClientCross robot;
+    robot.connectSocket(ip_, "7000"); // TODO: get port from param server
+
+    // Write value
+    if (!robot.writeInt(&name, &value)) {
+      ROS_ERROR("Failed to write to robot.");
+      robot.disconnectSocket();
+      return false; 
     }
+    // TODO: check for success
     return true;
   }
+
+  bool KVPVariableInterface::write(const std::string& name, double value) {
+    BoostClientCross robot;
+    robot.connectSocket(ip_, "7000");
+
+    // Write value
+    if (!robot.writeReal(&name, &value)) {
+      ROS_ERROR("Failed to write to robot.");
+      robot.disconnectSocket();
+      return false;
+    }
+    // TODO: check for success
+    return true;
+  }
+  
   bool KVPVariableInterface::getBool(kuka_kvp_hw_interface::GetBool::Request& req,
 				     kuka_kvp_hw_interface::GetBool::Response& res) {
     BoostClientCross robot;
@@ -86,4 +106,65 @@ namespace kuka_kvp_hw_interface {
     robot.disconnectSocket();
     return true;
   }
+
+  bool KVPVariableInterface::setBool(kuka_kvp_hw_interface::SetBool::Request& req,
+				     kuka_kvp_hw_interface::SetBool::Response& res) {
+    if (write(req.name, req.value)) {
+      res.code.val = industrial_msgs::ServiceReturnCode::SUCCESS;
+    } else {
+      res.code.val = industrial_msgs::ServiceReturnCode::FAILURE;
+    }
+    return true;
+  }
+
+  bool KVPVariableInterface::getInt(kuka_kvp_hw_interface::GetInt::Request& req,
+				    kuka_kvp_hw_interface::GetInt::Response& res) {
+    BoostClientCross robot;
+    robot.connectSocket(ip_, "7000"); //TODO: get port from parameter server
+    int value;
+    if (!robot.readInt(&req.name, value)) {
+      ROS_ERROR("Failed to read from robot.");
+      robot.disconnectSocket();
+      return false;
+    }
+
+    res.value = value;
+    return true;
+  }
+
+  bool KVPVariableInterface::setInt(kuka_kvp_hw_interface::SetInt::Request& req,
+				    kuka_Kvp_hw_interface::SetInt::Response& res) {
+    if (write(req.name, req.value)) {
+      res.code.val = industrial_msgs::ServiceReturnCode::SUCCESS;
+    } else {
+      res.code.val = industrial_msgs::ServiceReturnCode::FAILURE;
+    }
+    return true;
+  }
+
+  bool KVPVariableInterface::getFloat(kuka_kvp_hw_interface::GetInt::Request& req,
+				      kuka_kvp_hw_interface::GetInt::Response& res) {
+    BoostClientCross robot;
+    robot.connectSocket(ip_, "7000"); //TODO: get port from parameter server
+    double value;
+    if (!robot.readInt(&req.name, value)) {
+      ROS_ERROR("Failed to read from robot.");
+      robot.disconnectSocket();
+      return false;
+    }
+
+    res.value = value;
+    return true;
+  }
+
+  bool KVPVariableInterface::setFloat(kuka_kvp_hw_interface::SetInt::Request& req,
+				    kuka_Kvp_hw_interface::SetInt::Response& res) {
+    if (write(req.name, req.value)) {
+      res.code.val = industrial_msgs::ServiceReturnCode::SUCCESS;
+    } else {
+      res.code.val = industrial_msgs::ServiceReturnCode::FAILURE;
+    }
+    return true;
+  }
+
 }

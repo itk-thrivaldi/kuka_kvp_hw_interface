@@ -27,6 +27,10 @@ add_service_files(FILES
     unlockTool.srv
     GetBool.srv
     SetBool.srv
+    GetInt.srv
+    SetInt.srv
+    GetFloat.srv
+    SetFloat.srv
 )
 
 generate_messages(DEPENDENCIES
