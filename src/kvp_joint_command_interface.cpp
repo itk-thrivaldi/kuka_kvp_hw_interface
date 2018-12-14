@@ -32,7 +32,20 @@ KVPJointCommandInterface::KVPJointCommandInterface(ros::NodeHandle& nh)
   nh.param("kvp_read_from", kvp_read_from_, std::string("$AXIS_ACT"));
   nh.param("kvp_write_to", kvp_write_to_, std::string("AXIS_SET"));
 
-  // Need IP on paramter server
+  // For feedback control purposes, max joint rate will be used to
+  // calculate the max axis speed
+  kvp_max_joint_rate_.resize(num_joints_, 0.0);
+  if (!nh.getParam("kvp_max_joint_rate", kvp_max_joint_rate_))
+    {
+      ROS_WARN("No 'kvp_max_joint_rate' found on parameter server, feedback control
+may be limited.");
+      has_max_joint_rate_ = false;
+    }
+  else
+    {
+      has_max_joint_rate_ = true;
+    }
+  // Need IP on parameter server
   if (!nh.getParam("robot_ip_address", ip_))
   {
     ROS_ERROR("Cannot find required parameter 'robot_ip_address' "
@@ -140,6 +153,13 @@ void KVPJointCommandInterface::readKVP()
 void KVPJointCommandInterface::writeKVP()
 {
   double joint_command_deg[num_joints_] = { 0 };
+  // Assume all robots have at least 6 axes.
+  int axis_vel_command_perc[6] = { 100 };
+  // External axes speeds are the rest
+  if (num_joints_ > 6)
+  {
+    int extax_vel_command_perc[num_joints_-6] = {100};
+  }
   static const double RAD2DEG = 57.295779513082323;
 
   while (true)
@@ -158,6 +178,10 @@ void KVPJointCommandInterface::writeKVP()
     for (int i = 0; i < 6; i++)
     {
       joint_command_deg[i] = RAD2DEG * joint_position_command_[i];
+      if (has_max_joint_rate_)
+      {
+	axis_vel_command_perc[i] = joint_velocity_command[i]/kvp_max_joint_rate_[i];
+      }
     }
 
     // Asume all external axes are linear
@@ -165,10 +189,13 @@ void KVPJointCommandInterface::writeKVP()
     for (int i = 6; i < num_joints_; i++)
     {
       joint_command_deg[i] = 1000 * joint_position_command_[i];
+      if (has_max_joint_rate_)
+      {
+	ext_ax_vel_command_perc[i-6] = joint_velocity_command[i]/kvp_max_joint_rate[i];
+      }
     }
-
     // Write data to robot
-    if (!robot_write_.writeE6AXIS(&kvp_write_to_, joint_command_deg, num_joints_, &debug))
+    if (!robot_write_.writeAXISVELPERC(&kvp_write_to_, joint_command_deg, axis_vel_command_perc, extax_vel_command_perc, num_joints_, &debug))
     {
       ROS_ERROR("Failed to write to robot");
       robot_run_ = false;
