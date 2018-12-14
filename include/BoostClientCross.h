@@ -398,6 +398,56 @@ public:
   }
 
   /**
+   * @brief Write a {E6AXIS, VEL_AXIS_SET, VEL_EXTAX} struct to KRC.
+   *
+   * @param write_to KRL variable name
+   * @param joint_command Joint values, in order from A1 - A6, E1 - E6
+   * @param vel_axis Axis velocity in % (1,..,100)
+   * @param vel_ext_ax External axis velocities in %, is only set if joints > 6
+   * @param joints Number of joint values to send.
+   * @param out Formatted string sent to KRC is stored to this variable
+   *
+   * @return Currently always returns true. Inteded to return true\false depning on successful write.
+   */
+  bool writeAXISVELPERC(const std::string* write_to, const double* joint_command, const int* vel_axis, cons int* vel_extax, const std::size_t joints, std::string* out)
+  {
+    *out = "{AXIS_SET {";
+    // Write axis_set
+    for (int i = 0; (i < joints) && (i < 6); ++i)
+    {
+      *out += " A" + std::to_string(i + 1) + ' ' + std::to_string(joint_command[i]) + ',';
+    }
+
+    for (int i = 6; (i < joints) && (i < 12); ++i)
+    {
+      *out += " E" + std::to_string(i - 5) + ' ' + std::to_string(joint_command[i]) + ',';
+    }
+    *out += "}, AXIS_VEL_SET {";
+    // Write axis vel
+    for (int i = 0; (i < joints) && (i < 6); ++i)
+    {
+      *out += " A" + std::to_string(i + 1) + ' ' + std::to_string(vel_axis[i]) + ',';
+    }
+    // Write ext axis vel
+    if (joints > 6)
+    {
+      *out += "}, EXTAX_VEL_SET {"
+    }
+    for (int i = 6; (i < joints) && (i < 12); ++i)
+    {
+      *out += " E" + std::to_string(i - 5) + ' ' + std::to_string(vel_extax[i]) + ',';
+    }
+    *out += "}";
+    out->back() = '}';
+
+    std::vector<unsigned char> out_vector(out->begin(), out->end());
+    std::vector<unsigned char> var(write_to->begin(), write_to->end());
+    std::vector<unsigned char> formated_out = this->formatWriteMsg(var, out_vector);
+    std::vector<unsigned char> reply = this->sendMsg(formated_out);
+    // TODO: Check reply from server and return true/false based on this
+    return true;
+  }
+  /**
    * @brief Read a KRL struct
    *
    * @param read_from KRL variable name to read from
