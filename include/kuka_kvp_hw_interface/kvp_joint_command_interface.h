@@ -73,7 +73,7 @@ protected:
   std::string ip_;
   std::string kvp_read_from_;
   std::string kvp_write_to_;
-
+  std::vector<double> kvp_max_joint_rate_;
 private:
   // Variables for robot communication
   BoostClientCross robot_read_;
@@ -82,6 +82,7 @@ private:
   boost::barrier robot_update_done_;
   boost::thread read_thread_;
   boost::thread write_thread_;
+  bool has_max_joint_rate_;
   bool robot_run_ = true;
   std::unique_ptr<realtime_tools::RealtimePublisher<std_msgs::String>> realtime_pub_;
 
