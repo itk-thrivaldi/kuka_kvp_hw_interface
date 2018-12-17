@@ -37,8 +37,7 @@ KVPJointCommandInterface::KVPJointCommandInterface(ros::NodeHandle& nh)
   kvp_max_joint_rate_.resize(num_joints_, 0.0);
   if (!nh.getParam("kvp_max_joint_rate", kvp_max_joint_rate_))
     {
-      ROS_WARN("No 'kvp_max_joint_rate' found on parameter server, feedback control
-may be limited.");
+      ROS_WARN("No 'kvp_max_joint_rate' found on parameter server, feedback control may be limited.");
       has_max_joint_rate_ = false;
     }
   else
@@ -156,10 +155,7 @@ void KVPJointCommandInterface::writeKVP()
   // Assume all robots have at least 6 axes.
   int axis_vel_command_perc[6] = { 100 };
   // External axes speeds are the rest
-  if (num_joints_ > 6)
-  {
-    int extax_vel_command_perc[num_joints_-6] = {100};
-  }
+  int extax_vel_command_perc[num_joints_-6] = {100};
   static const double RAD2DEG = 57.295779513082323;
 
   while (true)
@@ -180,7 +176,7 @@ void KVPJointCommandInterface::writeKVP()
       joint_command_deg[i] = RAD2DEG * joint_position_command_[i];
       if (has_max_joint_rate_)
       {
-	axis_vel_command_perc[i] = joint_velocity_command[i]/kvp_max_joint_rate_[i];
+	axis_vel_command_perc[i] = joint_velocity_command_[i]/kvp_max_joint_rate_[i];
       }
     }
 
@@ -191,7 +187,7 @@ void KVPJointCommandInterface::writeKVP()
       joint_command_deg[i] = 1000 * joint_position_command_[i];
       if (has_max_joint_rate_)
       {
-	ext_ax_vel_command_perc[i-6] = joint_velocity_command[i]/kvp_max_joint_rate[i];
+	extax_vel_command_perc[i-6] = joint_velocity_command_[i]/kvp_max_joint_rate_[i];
       }
     }
     // Write data to robot
