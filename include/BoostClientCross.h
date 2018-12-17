@@ -409,7 +409,7 @@ public:
    *
    * @return Currently always returns true. Inteded to return true\false depning on successful write.
    */
-  bool writeAXISVELPERC(const std::string* write_to, const double* joint_command, const int* vel_axis, cons int* vel_extax, const std::size_t joints, std::string* out)
+  bool writeAXISVELPERC(const std::string* write_to, const double* joint_command, const int* vel_axis, const int* vel_extax, const std::size_t joints, std::string* out)
   {
     *out = "{AXIS_SET {";
     // Write axis_set
@@ -431,7 +431,7 @@ public:
     // Write ext axis vel
     if (joints > 6)
     {
-      *out += "}, EXTAX_VEL_SET {"
+      *out += "}, EXTAX_VEL_SET {";
     }
     for (int i = 6; (i < joints) && (i < 12); ++i)
     {
