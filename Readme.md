@@ -1,6 +1,6 @@
-# kuka_kvp_hw_interface
+# kuka_kvp_hw_interface *DEVEL*
 
-Package for controlling a KUKA KRC robot from ROS using KUKAVARPROXY
+Package for controlling a KUKA KRC robot from ROS using KUKAVARPROXY. *DEVELOPMENT BRANCH*.
 
 
 ## ROS Nodes in this package
@@ -33,3 +33,7 @@ Package for controlling a KUKA KRC robot from ROS using KUKAVARPROXY
   * /lock_tool Locks toolchanger
   * /unlock_tool Unlocks toolchanger
 
+
+# TODO!
+
+For feedback control we should be able to set the axis position and velocity percentage. We've started on this, but we need to make a ros_controller that supports this.
