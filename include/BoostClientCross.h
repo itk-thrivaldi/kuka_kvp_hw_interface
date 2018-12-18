@@ -562,7 +562,6 @@ public:
     std::vector<unsigned char> formated_read = this->formatReadMsg(var);
     std::vector<unsigned char> reply = this->sendMsg(formated_read);
     std::string svalue(reply.begin(), reply.end());
-    std::cout << "OUTPUT" << svalue << std::endl;
     try
       {
 	output = std::stoi(svalue);
