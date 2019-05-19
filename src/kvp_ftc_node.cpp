@@ -42,8 +42,13 @@ int main(int argc, char** argv)
   stopwatch_now = std::chrono::steady_clock::now();
   period.fromSec(std::chrono::duration_cast<std::chrono::duration<double>>(stopwatch_now - stopwatch_last).count());
   stopwatch_last = stopwatch_now;
-
-  ros::Rate r(10);  // never use this for anything with remotely RT demands
+  double rateparam;
+  if (!nh.getParam("force_torque_sensor_controller/publish_rate", rateparam)){
+    ROS_WARN("Cannot find required parameter 'publish_rate' on the parameter server. Using default '83.0'.");
+    rateparam=83.0;
+ 
+  }
+  ros::Rate r(rateparam);  // never use this for anything with remotely RT demands
 
   ROS_INFO_STREAM_NAMED("hardware_interface", "Entering loop");
   while (ros::ok())
